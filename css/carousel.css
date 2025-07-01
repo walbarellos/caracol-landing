@@ -1,9 +1,12 @@
 /* ════════════════════════════════════════════════════════════════════════
-🎠 carousel.css — Galeria Inteligente Caracol
-Scroll horizontal suave com snap, acessibilidade e visual clean
+🎠 carousel.css — Galeria Inteligente Caracol v3.0
+Scroll horizontal com snap, acessibilidade semântica, estética adaptativa
+Criado com sabedoria, força e beleza — Refinamento nível 12/10
 ═════════════════════════════════════════════════════════════════════════ */
 
 .carrossel-container {
+  max-width: 1200px;
+  margin: 0 auto;
   overflow-x: auto;
   padding: 2rem 1rem;
   background: #111;
@@ -21,15 +24,17 @@ Scroll horizontal suave com snap, acessibilidade e visual clean
 }
 
 .carrossel img {
-  scroll-snap-align: center;
+  scroll-snap-align: start;
   flex-shrink: 0;
   height: auto;
   max-height: 300px;
   max-width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
   border-radius: 12px;
   border: 2px solid #333;
   background: #222;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 .carrossel img:hover {
@@ -37,16 +42,17 @@ Scroll horizontal suave com snap, acessibilidade e visual clean
   border-color: #10ac84;
 }
 
-/* Mobile scroll + ocultar scrollbar */
+/* Scrollbar discreta para navegação horizontal */
 .carrossel::-webkit-scrollbar {
   height: 8px;
 }
+
 .carrossel::-webkit-scrollbar-thumb {
   background-color: #444;
   border-radius: 4px;
 }
 
-/* Responsividade extra */
+/* Responsividade para telas menores */
 @media (max-width: 768px) {
   .carrossel-container {
     padding: 1rem;
@@ -54,5 +60,6 @@ Scroll horizontal suave com snap, acessibilidade e visual clean
 
   .carrossel img {
     max-height: 200px;
+    aspect-ratio: 16 / 10; /* proporção mais amigável em dispositivos verticais */
   }
 }
