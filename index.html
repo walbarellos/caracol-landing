@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+  <!-- 🌐 Metadados Essenciais -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Baixe gratuitamente o Método Caracol – a revolução estética e lógica da programação com IA." />
   <meta name="author" content="Graciliano Tolentino" />
+
+  <!-- 📱 SEO Social / Open Graph -->
   <meta property="og:title" content="Método Caracol – Sabedoria, Força e Beleza" />
   <meta property="og:description" content="Programe com clareza, refinamento e soberania. Baixe o PDF gratuito." />
   <meta property="og:image" content="assets/mascote.png" />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://caracol.tec.br" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
 
+  <!-- 🎯 Favicon otimizado -->
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <!-- ✍️ Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;700&display=swap" rel="stylesheet" />
+
+  <!-- 📘 Título -->
   <title>Método Caracol – Sabedoria, Força e Beleza</title>
 
-  <!-- Estilos principais -->
+  <!-- 🎨 Estilos -->
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/header.css" />
   <link rel="stylesheet" href="css/carousel.css" />
@@ -24,26 +39,55 @@
 
 <body>
 
-  <!-- 🌟 Header (logo, título, identidade visual) -->
-  <div id="header-container" role="banner" aria-label="Cabeçalho da página"></div>
+  <!-- 🌟 Cabeçalho semântico -->
+  <header id="header-container" role="banner" aria-label="Cabeçalho principal do site">
+    <!-- Inserido dinamicamente -->
+  </header>
 
-  <!-- 🐚 Carrossel com imagens do caracol -->
-  <div id="carousel-container" role="region" aria-label="Galeria de imagens do caracol"></div>
+  <!-- 🐚 Carrossel com autoplay e loop -->
+  <section class="carrossel-container" data-autoplay="6000" data-loop="true" role="region" aria-label="Galeria Método Caracol">
+    <button class="carrossel-seta esquerda" aria-label="Imagem anterior">◀</button>
 
-  <!-- 🧾 Formulário obrigatório para baixar o método -->
-  <div id="form-container" role="form" aria-label="Formulário de identificação antes do download"></div>
+    <div id="carrossel" class="carrossel-itens" tabindex="0">
+      <picture>
+        <img src="assets/carrossel/caracol01.jpg" alt="Espiral roxa com brilho central" loading="lazy" width="480" height="320" />
+      </picture>
+      <picture>
+        <img src="assets/carrossel/caracol02.jpg" alt="Símbolo caracol sobre matriz hexagonal" loading="lazy" width="480" height="320" />
+      </picture>
+      <!-- ... outras imagens -->
+    </div>
 
-  <!-- 🧠 Rodapé com biografia e links sociais -->
-  <div id="footer-container" role="contentinfo" aria-label="Informações sobre o autor e links sociais"></div>
+    <button class="carrossel-seta direita" aria-label="Próxima imagem">▶</button>
+  </section>
 
-  <!-- 🔧 Fallback para JS desativado -->
+  <!-- 🧾 Formulário do Método Caracol -->
+  <main id="form-container" role="main" aria-label="Formulário de download gratuito">
+    <!-- Conteúdo do formulário inserido dinamicamente -->
+  </main>
+
+  <!-- 🧠 Rodapé institucional -->
+  <footer id="footer-container" role="contentinfo" aria-label="Rodapé com informações do autor">
+    <!-- Conteúdo dinâmico -->
+  </footer>
+
+  <!-- ⚠️ Fallback para navegadores sem JS -->
   <noscript>
-    <div class="no-js-warning">
-      <strong>⚠️ Este site requer JavaScript para funcionar corretamente. Por favor, ative o JavaScript no seu navegador.</strong>
+    <div class="no-js-warning" role="alert" style="padding: 1rem; background: #ffefef; color: #a00; text-align: center;">
+      <p><strong>⚠️ Este site requer JavaScript para funcionar corretamente.</strong></p>
+      <p>Você pode <a href="metodo-caracol.pdf" style="color: #a00;">baixar o PDF diretamente aqui</a>.</p>
     </div>
   </noscript>
 
-  <!-- 🧠 Lógica JS para montar a página -->
-  <script src="js/main.js"></script>
+  <!-- 🧠 Scripts Modulares -->
+  <script src="js/carousel.js" defer></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.querySelector(".carrossel-container");
+      if (container && window.Carousel) {
+        new Carousel(container);
+      }
+    });
+  </script>
 </body>
 </html>

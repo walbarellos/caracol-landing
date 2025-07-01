@@ -1,85 +1,160 @@
-// carousel.js — Controle Inteligente da Galeria Caracol
-// Criado com sabedoria, força e beleza | Refinado para nota 12/10
+// carousel.js — Galeria Inteligente Caracol v7.0
+// Reestruturado como Classe Modular — Instanciável, acessível e refinado
 
-document.addEventListener("DOMContentLoaded", () => {
-  const carrossel = document.getElementById("carrossel");
-  const setaEsquerda = document.querySelector(".carrossel-seta.esquerda");
-  const setaDireita = document.querySelector(".carrossel-seta.direita");
+"use strict";
 
-  // Cria container de status para leitores de tela
-  const statusSR = document.createElement("div");
-  statusSR.setAttribute("aria-live", "polite");
-  statusSR.classList.add("sr-only");
-  carrossel.parentElement.appendChild(statusSR);
+class Carousel {
+  /**
+   * Cria uma nova instância do carrossel
+   * @param {HTMLElement} container - Elemento DOM com id ou classe do carrossel
+   */
+  constructor(container) {
+    if (!(container instanceof HTMLElement)) throw new Error("Container inválido");
 
-  // Estado inicial
-  atualizarSetas();
-  anunciarSlideVisivel();
+    this.container = container;
+    this.setaEsquerda = container.querySelector(".carrossel-seta.esquerda");
+    this.setaDireita = container.querySelector(".carrossel-seta.direita");
+    this.itens = container.querySelector(".carrossel-itens");
+    this.imagens = this.itens?.querySelectorAll("picture img, img:not(picture img)") || [];
+    this.autoplayDelay = parseInt(container.dataset.autoplay, 10) || null;
+    this.loop = container.dataset.loop === "true";
+    this.raf = null;
+    this.autoplayId = null;
 
-  // Observa mudanças de scroll
-  carrossel.addEventListener("scroll", () => {
-    atualizarSetas();
-    anunciarSlideVisivel();
-  });
+    if (!this.container || !this.itens || this.imagens.length === 0) return;
 
-  // Controle por clique nas setas
-  setaEsquerda.addEventListener("click", () => {
-    scrollCarrossel(-1);
-  });
+    this.statusSR = this.#criarStatusAriaLive();
 
-  setaDireita.addEventListener("click", () => {
-    scrollCarrossel(1);
-  });
+    this.#configurar();
+    this.#atualizar();
+    this.#ativarEventos();
 
-  // Teclado ← →
-  carrossel.setAttribute("tabindex", "0");
-  carrossel.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") scrollCarrossel(-1);
-    if (e.key === "ArrowRight") scrollCarrossel(1);
-  });
-});
+    if (this.autoplayDelay) this.#iniciarAutoplay();
+  }
 
-function scrollCarrossel(direcao) {
-  const carrossel = document.getElementById("carrossel");
-  const larguraVisivel = carrossel.clientWidth;
-  const passo = Math.round(larguraVisivel * 0.9); // rola 90% da área visível
-
-  carrossel.scrollBy({
-    left: direcao * passo,
-    behavior: "smooth",
-  });
-}
-
-function atualizarSetas() {
-  const carrossel = document.getElementById("carrossel");
-  const setaEsquerda = document.querySelector(".carrossel-seta.esquerda");
-  const setaDireita = document.querySelector(".carrossel-seta.direita");
-
-  const scrollLeft = carrossel.scrollLeft;
-  const scrollMax = carrossel.scrollWidth - carrossel.clientWidth;
-
-  setaEsquerda.disabled = scrollLeft <= 10;
-  setaDireita.disabled = scrollLeft >= scrollMax - 10;
-}
-
-function anunciarSlideVisivel() {
-  const carrossel = document.getElementById("carrossel");
-  const imagens = carrossel.querySelectorAll("picture");
-  const statusSR = carrossel.parentElement.querySelector("[aria-live]");
-
-  let imagemAtual = 0;
-  let maiorVisivel = 0;
-
-  imagens.forEach((picture, index) => {
-    const img = picture.querySelector("img");
-    const rect = img.getBoundingClientRect();
-    const visivel = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
-
-    if (visivel > maiorVisivel) {
-      maiorVisivel = visivel;
-      imagemAtual = index;
+  /**
+   * Configura atributos iniciais
+   */
+  #configurar() {
+    this.itens.setAttribute("tabindex", "0");
+    if (this.itens.scrollLeft === 0) {
+      this.itens.focus({ preventScroll: true });
     }
-  });
+  }
 
-  statusSR.textContent = `Imagem ${imagemAtual + 1} de ${imagens.length}`;
+  /**
+   * Atualiza status visual e acessível
+   */
+  #atualizar() {
+    this.#atualizarSetas();
+    this.#atualizarStatus();
+  }
+
+  /**
+   * Ativa eventos de scroll, clique e teclado
+   */
+  #ativarEventos() {
+    this.itens.addEventListener("scroll", () => {
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => this.#atualizar());
+    });
+
+    this.setaEsquerda?.addEventListener("click", () => this.scroll(-1));
+    this.setaDireita?.addEventListener("click", () => this.scroll(1));
+
+    this.itens.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") this.scroll(-1);
+      if (e.key === "ArrowRight") this.scroll(1);
+    });
+
+    this.container.addEventListener("mouseenter", () => this.#pararAutoplay());
+    this.container.addEventListener("mouseleave", () => this.#iniciarAutoplay());
+  }
+
+  /**
+   * Realiza rolagem suave em direção específica
+   * @param {number} direcao -1 para esquerda, +1 para direita
+   */
+  scroll(direcao) {
+    const largura = this.itens.clientWidth * 0.9;
+    this.itens.scrollBy({
+      left: direcao * largura,
+      behavior: "smooth"
+    });
+  }
+
+  /**
+   * Atualiza texto de status e aplica classe visual .ativo
+   */
+  #atualizarStatus() {
+    let maiorVisivel = 0;
+    let imagemAtual = 0;
+
+    this.imagens.forEach((img, index) => {
+      const rect = img.getBoundingClientRect();
+      const visivel = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
+      if (visivel > maiorVisivel) {
+        maiorVisivel = visivel;
+        imagemAtual = index;
+      }
+    });
+
+    const alt = this.imagens[imagemAtual].alt || `Imagem ${imagemAtual + 1}`;
+    this.statusSR.textContent = `Imagem ${imagemAtual + 1} de ${this.imagens.length}: ${alt}`;
+
+    this.imagens.forEach((img, i) => {
+      const alvo = img.closest("picture") || img;
+      alvo.classList.toggle("ativo", i === imagemAtual);
+    });
+
+    if (window.__DEBUG__) {
+      console.log(`[Carousel] Imagem ativa: ${imagemAtual + 1} (${alt})`);
+    }
+  }
+
+  /**
+   * Atualiza estado das setas esquerda e direita
+   */
+  #atualizarSetas() {
+    const scrollMax = this.itens.scrollWidth - this.itens.clientWidth;
+    if (this.setaEsquerda) {
+      this.setaEsquerda.disabled = this.itens.scrollLeft <= 10;
+    }
+    if (this.setaDireita) {
+      this.setaDireita.disabled = this.itens.scrollLeft >= scrollMax - 10;
+    }
+  }
+
+  /**
+   * Cria elemento aria-live oculto para status acessível
+   */
+  #criarStatusAriaLive() {
+    const status = document.createElement("div");
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.className = "sr-only";
+    this.container.appendChild(status);
+    return status;
+  }
+
+  /**
+   * Inicia autoplay se definido no HTML
+   */
+  #iniciarAutoplay() {
+    if (!this.autoplayDelay || this.autoplayId) return;
+    this.autoplayId = setInterval(() => this.scroll(1), this.autoplayDelay);
+  }
+
+  /**
+   * Para o autoplay manualmente ou ao interagir
+   */
+  #pararAutoplay() {
+    if (this.autoplayId) {
+      clearInterval(this.autoplayId);
+      this.autoplayId = null;
+    }
+  }
 }
+
+// 🌐 Permite inicialização manual via HTML ou JS externo
+window.Carousel = Carousel;

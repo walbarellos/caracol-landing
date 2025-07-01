@@ -1,7 +1,9 @@
-// main.js — Montagem modular inteligente com sabedoria, força e beleza (v2.0)
-// Arquitetura refinada, acessibilidade internacional, preparado para produção real
+// main.js — Montagem Modular Caracol v3.0
+// Refinado para alto desempenho, acessibilidade total e escalabilidade internacional
 
-// 🌐 Configuração central de caminhos (evita repetição e facilita i18n)
+"use strict";
+
+// 🌐 Caminhos centralizados para fácil manutenção
 const componentes = {
   header: "components/header.html",
   carousel: "components/carousel.html",
@@ -9,69 +11,85 @@ const componentes = {
   footer: "components/footer.html"
 };
 
-// 🚀 Carrega um componente HTML no container correspondente
+/**
+ * 🚀 Carrega componente HTML em seu container
+ * @param {string} id - ID do container
+ * @param {string} caminho - Caminho do componente HTML
+ * @param {Function} callback - Função pós-carregamento (opcional)
+ */
 async function carregarComponente(id, caminho, callback = null) {
-  // Fallback para navegadores antigos sem fetch
-  if (!window.fetch) {
+  if (!window.fetch || !window.Promise) {
     document.getElementById(id).innerHTML = `
-      <div class="toast-erro">⚠️ Navegador incompatível com este site. Atualize seu navegador.</div>
+      <div class="toast-erro">⚠️ Navegador desatualizado. Atualize para uma experiência completa.</div>
     `;
     return;
   }
 
   try {
     const resposta = await fetch(caminho);
+    if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
     const html = await resposta.text();
     const container = document.getElementById(id);
     container.innerHTML = html;
-    container.dataset.loaded = "true"; // Marca como carregado
-    if (callback && typeof callback === "function") callback(); // Pós-load individual
+    container.dataset.loaded = "true";
+    if (typeof callback === "function") callback();
   } catch (erro) {
     console.error(`Erro ao carregar ${caminho}:`, erro);
     document.getElementById(id).innerHTML = `
-      <div class="toast-erro">⚠️ Erro ao carregar o módulo <strong>${caminho}</strong>.</div>
+      <div class="toast-erro">⚠️ Falha ao carregar <strong>${caminho}</strong>. Verifique sua conexão.</div>
     `;
   }
 }
 
-// 🚀 Carregamento paralelo de todos os componentes com alto desempenho
+/**
+ * 🚀 Carrega todos os componentes em paralelo
+ */
 async function carregarTodosComponentes() {
   await Promise.all([
     carregarComponente("header-container", componentes.header),
     carregarComponente("carousel-container", componentes.carousel, () => {
-      // 💡 Lógica pós-carregamento do carrossel (ex: ativar JS de navegação)
-      if (typeof inicializarCarrossel === "function") {
-        inicializarCarrossel(); // Suporte a função externa
-      }
+      inicializarTodosCarrosseis();
     }),
     carregarComponente("form-container", componentes.form, () => {
-      if (typeof inicializarFormulario === "function") {
-        inicializarFormulario(); // Suporte a função modular
-      }
+      inicializarFormulario();
+      observarFormulario();
     }),
     carregarComponente("footer-container", componentes.footer)
   ]);
 }
 
-// form-handler.js — Validação refinada e liberação progressiva com acessibilidade total
+/**
+ * 🌀 Instancia todos os carrosséis encontrados na página
+ */
+function inicializarTodosCarrosseis() {
+  const containers = document.querySelectorAll(".carrossel-container");
+  if (!window.Carousel || !containers.length) return;
 
+  containers.forEach((container) => {
+    try {
+      new Carousel(container);
+    } catch (erro) {
+      console.warn("Falha ao inicializar carrossel:", erro);
+    }
+  });
+}
+
+/**
+ * 🧾 Valida e libera formulário de forma acessível
+ */
 function inicializarFormulario() {
   const form = document.getElementById("caracol-form");
   const download = document.getElementById("download-container");
-
   if (!form || !download) return;
 
-  // 🔊 Aria-live para feedback acessível
   const status = document.createElement("div");
   status.classList.add("sr-only");
   status.setAttribute("aria-live", "polite");
   status.setAttribute("role", "status");
   form.appendChild(status);
 
-  // 🧠 Validação e feedback em tempo real
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-
     const campos = form.querySelectorAll("[required]");
     let valido = true;
 
@@ -99,26 +117,23 @@ function inicializarFormulario() {
   });
 }
 
-// 🔍 Observa especificamente o container do formulário para inicializá-lo no tempo certo
+/**
+ * 🔍 Observa o formulário após injeção dinâmica
+ */
 function observarFormulario() {
   const alvo = document.getElementById("form-container");
-
   if (!alvo) return;
 
-  const observer = new MutationObserver((mutacoes) => {
+  const observer = new MutationObserver(() => {
     const form = document.getElementById("caracol-form");
     const download = document.getElementById("download-container");
-
     if (form && download) {
-      // ✅ Confirma que os elementos existem, então para a observação
       observer.disconnect();
-
-      // 🧠 Caso o carregamento falhe silenciosamente
       if (!form.querySelector("[type='submit']")) {
         const erro = document.createElement("div");
         erro.className = "toast-erro";
         erro.setAttribute("role", "alert");
-        erro.innerText = "Erro ao montar o formulário. Tente atualizar a página.";
+        erro.textContent = "Erro ao montar o formulário. Tente atualizar a página.";
         form.appendChild(erro);
       }
     }
@@ -127,3 +142,5 @@ function observarFormulario() {
   observer.observe(alvo, { childList: true, subtree: true });
 }
 
+// 🚀 Início automático
+document.addEventListener("DOMContentLoaded", carregarTodosComponentes);

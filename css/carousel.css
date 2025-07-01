@@ -1,141 +1,163 @@
-/* ════════════════════════════════════════════════════════════════════════
-🎠 carousel.css — Galeria Inteligente Caracol v4.0
-Scroll horizontal com snap, estética adaptativa, acessibilidade refinada
-Criado com sabedoria, força e beleza — Padrão internacional 12/10
-═════════════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════
+🎠 carousel.css — Método Caracol v5.0
+Scroll refinado com acessibilidade real, impacto visual e modularidade
+Criado com sabedoria, força e beleza — Nível técnico: excelência global
+═══════════════════════════════════════════════════════════════════════ */
 
+/* 🎠 Container Externo com tema adaptativo */
 .carrossel-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  overflow-x: auto;
+  position: relative;
+  margin: 2rem auto;
   padding: 2rem 1rem;
-  background: #111;
+  max-width: 1280px;
+  background: #0d0d0d;
   border-top: 2px solid #5f27cd;
   border-bottom: 2px solid #5f27cd;
-  position: relative;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.carrossel {
+/* 📸 Faixa Horizontal Scrollável com Snap Suave */
+.carrossel-itens {
   display: flex;
   gap: 1.5rem;
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  overflow-x: auto;
-  padding-bottom: 1rem;
+  -webkit-overflow-scrolling: touch;
+  padding-block: 1rem;
+  padding-inline: 0.5rem;
 }
 
-/* 🖼️ Imagens com animação e performance refinada */
-.carrossel img {
-  scroll-snap-align: start;
+/* 🖼️ Estilo para cada imagem e estrutura interna */
+.carrossel-itens picture {
   flex-shrink: 0;
-  height: auto;
-  max-height: 300px;
-  max-width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: contain;
-  border-radius: 12px;
-  border: 2px solid #333;
-  background: #222;
-  transition: transform 0.3s ease, border-color 0.3s ease, opacity 0.6s ease;
+  scroll-snap-align: start;
+  border-radius: 16px;
+  background-color: #1a1a1a;
+  overflow: hidden;
+  transition: transform 0.3s ease, opacity 0.5s ease;
   opacity: 0;
-  transform: translateY(1rem);
+  transform: translateY(2rem);
   will-change: transform, opacity;
 }
 
-/* Ativa visualmente ao entrar no viewport (JS adiciona .visivel) */
-.carrossel picture.visivel img {
+.carrossel-itens picture.visivel {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Imagem ativa (opcional via JS) */
-.carrossel picture.ativo img {
+.carrossel-itens img {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  width: auto;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: inherit;
+  object-fit: contain;
+  border: 2px solid #333;
+  background: #0f0f0f;
+}
+
+/* Hover + foco refinado */
+.carrossel-itens img:hover {
+  transform: scale(1.04);
+  border-color: #10ac84;
+  box-shadow: 0 0 8px #10ac8477;
+}
+
+/* Destaque para imagem ativa via .ativo */
+picture.ativo img {
   border-color: #10ac84;
   box-shadow: 0 0 0 3px #10ac8499;
 }
 
-/* Hover refinado */
-.carrossel img:hover {
-  transform: scale(1.05);
-  border-color: #10ac84;
-}
-
-/* 🎯 Setas de navegação laterais */
+/* 🎯 Botões laterais com feedback visual */
 .carrossel-seta {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   background-color: #222;
-  color: white;
+  color: #fff;
   border: none;
   padding: 0.75rem 1rem;
   border-radius: 50%;
-  cursor: pointer;
-  z-index: 10;
-  transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
   font-size: 1.25rem;
   line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   opacity: 0.8;
 }
 
-/* Posicionamento específico */
-.carrossel-seta.esquerda {
-  left: -1.5rem;
-}
-
-.carrossel-seta.direita {
-  right: -1.5rem;
-}
-
-/* Hover: movimento sutil e cor viva */
 .carrossel-seta:hover {
   background-color: #5f27cd;
   transform: translateY(-50%) scale(1.1);
   opacity: 1;
 }
 
-/* Acessibilidade: destaque ao usar teclado */
-.carrossel-seta:focus-visible {
-  outline: 2px solid #10ac84;
-  outline-offset: 4px;
-}
-
-/* Invisível quando desativada via JS */
 .carrossel-seta:disabled {
   opacity: 0.3;
   pointer-events: none;
 }
 
-/* 🌙 Suporte a modo claro automático (light mode) */
+.carrossel-seta:focus-visible {
+  outline: 2px solid #10ac84;
+  outline-offset: 4px;
+}
+
+.carrossel-seta.esquerda {
+  left: -1.25rem;
+}
+
+.carrossel-seta.direita {
+  right: -1.25rem;
+}
+
+/* 🌗 Suporte automático ao modo claro */
 @media (prefers-color-scheme: light) {
   .carrossel-container {
     background: #f9f9f9;
-    border-top: 2px solid #b5aaff;
-    border-bottom: 2px solid #b5aaff;
+    border-top-color: #b5aaff;
+    border-bottom-color: #b5aaff;
   }
 
-  .carrossel img {
-    background: #f0f0f0;
-    border-color: #bbb;
+  .carrossel-itens picture {
+    background-color: #f0f0f0;
+  }
+
+  .carrossel-itens img {
+    background-color: #ffffff;
+    border-color: #ccc;
   }
 
   .carrossel-seta {
-    background-color: #ddd;
+    background-color: #e0e0e0;
     color: #111;
   }
 
   .carrossel-seta:hover {
     background-color: #9370db;
   }
+
+  .carrossel-seta:focus-visible {
+    outline-color: #3c8dbc;
+  }
 }
 
-/* 📱 Responsividade para telas menores (celulares) */
+/* 📱 Estilo adaptado para telas menores */
 @media (max-width: 768px) {
   .carrossel-container {
     padding: 1rem;
   }
 
-  .carrossel img {
+  .carrossel-itens {
+    gap: 1rem;
+  }
+
+  .carrossel-itens img {
     max-height: 200px;
     aspect-ratio: 16 / 10;
   }
@@ -143,39 +165,44 @@ Criado com sabedoria, força e beleza — Padrão internacional 12/10
   .carrossel-seta {
     padding: 0.5rem 0.75rem;
     font-size: 1rem;
+    line-height: 1;
+  }
+
+  .carrossel-seta.esquerda {
+    left: 0.25rem;
+  }
+
+  .carrossel-seta.direita {
+    right: 0.25rem;
   }
 }
 
-/* 🖥️ Responsividade para telas ultrawide (4K+) */
+/* 🖥️ Estilo expandido para telas ultrawide (4K+) */
 @media (min-width: 1440px) {
   .carrossel-container {
     max-width: 1440px;
   }
 }
 
-/* 🖱️ Scrollbar discreta e estilizada */
-.carrossel::-webkit-scrollbar {
+/* 🧠 Barra de rolagem personalizada (webkit only) */
+.carrossel-itens::-webkit-scrollbar {
   height: 8px;
 }
 
-.carrossel::-webkit-scrollbar-thumb {
+.carrossel-itens::-webkit-scrollbar-thumb {
   background-color: #444;
   border-radius: 4px;
 }
 
-/* 🧠 Imagem ativa destacada (usada com classe JS .ativo) */
-picture.ativo img {
-  border-color: #10ac84;
-  box-shadow: 0 0 0 3px #10ac8499;
-}
-
-/* ♿ Elementos visuais apenas para leitores de tela */
+/* ♿ Elemento oculto visivelmente, mas acessível a leitores de tela */
 .sr-only {
   position: absolute !important;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
 }
