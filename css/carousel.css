@@ -1,7 +1,7 @@
 /* ════════════════════════════════════════════════════════════════════════
-🎠 carousel.css — Galeria Inteligente Caracol v3.0
-Scroll horizontal com snap, acessibilidade semântica, estética adaptativa
-Criado com sabedoria, força e beleza — Refinamento nível 12/10
+🎠 carousel.css — Galeria Inteligente Caracol v4.0
+Scroll horizontal com snap, estética adaptativa, acessibilidade refinada
+Criado com sabedoria, força e beleza — Padrão internacional 12/10
 ═════════════════════════════════════════════════════════════════════════ */
 
 .carrossel-container {
@@ -12,6 +12,7 @@ Criado com sabedoria, força e beleza — Refinamento nível 12/10
   background: #111;
   border-top: 2px solid #5f27cd;
   border-bottom: 2px solid #5f27cd;
+  position: relative;
 }
 
 .carrossel {
@@ -23,6 +24,7 @@ Criado com sabedoria, força e beleza — Refinamento nível 12/10
   padding-bottom: 1rem;
 }
 
+/* 🖼️ Imagens com animação e performance refinada */
 .carrossel img {
   scroll-snap-align: start;
   flex-shrink: 0;
@@ -34,15 +36,124 @@ Criado com sabedoria, força e beleza — Refinamento nível 12/10
   border-radius: 12px;
   border: 2px solid #333;
   background: #222;
-  transition: transform 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease, opacity 0.6s ease;
+  opacity: 0;
+  transform: translateY(1rem);
+  will-change: transform, opacity;
 }
 
+/* Ativa visualmente ao entrar no viewport (JS adiciona .visivel) */
+.carrossel picture.visivel img {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Imagem ativa (opcional via JS) */
+.carrossel picture.ativo img {
+  border-color: #10ac84;
+  box-shadow: 0 0 0 3px #10ac8499;
+}
+
+/* Hover refinado */
 .carrossel img:hover {
   transform: scale(1.05);
   border-color: #10ac84;
 }
 
-/* Scrollbar discreta para navegação horizontal */
+/* 🎯 Setas de navegação laterais */
+.carrossel-seta {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #222;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+  font-size: 1.25rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+/* Posicionamento específico */
+.carrossel-seta.esquerda {
+  left: -1.5rem;
+}
+
+.carrossel-seta.direita {
+  right: -1.5rem;
+}
+
+/* Hover: movimento sutil e cor viva */
+.carrossel-seta:hover {
+  background-color: #5f27cd;
+  transform: translateY(-50%) scale(1.1);
+  opacity: 1;
+}
+
+/* Acessibilidade: destaque ao usar teclado */
+.carrossel-seta:focus-visible {
+  outline: 2px solid #10ac84;
+  outline-offset: 4px;
+}
+
+/* Invisível quando desativada via JS */
+.carrossel-seta:disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* 🌙 Suporte a modo claro automático (light mode) */
+@media (prefers-color-scheme: light) {
+  .carrossel-container {
+    background: #f9f9f9;
+    border-top: 2px solid #b5aaff;
+    border-bottom: 2px solid #b5aaff;
+  }
+
+  .carrossel img {
+    background: #f0f0f0;
+    border-color: #bbb;
+  }
+
+  .carrossel-seta {
+    background-color: #ddd;
+    color: #111;
+  }
+
+  .carrossel-seta:hover {
+    background-color: #9370db;
+  }
+}
+
+/* 📱 Responsividade para telas menores (celulares) */
+@media (max-width: 768px) {
+  .carrossel-container {
+    padding: 1rem;
+  }
+
+  .carrossel img {
+    max-height: 200px;
+    aspect-ratio: 16 / 10;
+  }
+
+  .carrossel-seta {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* 🖥️ Responsividade para telas ultrawide (4K+) */
+@media (min-width: 1440px) {
+  .carrossel-container {
+    max-width: 1440px;
+  }
+}
+
+/* 🖱️ Scrollbar discreta e estilizada */
 .carrossel::-webkit-scrollbar {
   height: 8px;
 }
@@ -52,14 +163,19 @@ Criado com sabedoria, força e beleza — Refinamento nível 12/10
   border-radius: 4px;
 }
 
-/* Responsividade para telas menores */
-@media (max-width: 768px) {
-  .carrossel-container {
-    padding: 1rem;
-  }
+/* 🧠 Imagem ativa destacada (usada com classe JS .ativo) */
+picture.ativo img {
+  border-color: #10ac84;
+  box-shadow: 0 0 0 3px #10ac8499;
+}
 
-  .carrossel img {
-    max-height: 200px;
-    aspect-ratio: 16 / 10; /* proporção mais amigável em dispositivos verticais */
-  }
+/* ♿ Elementos visuais apenas para leitores de tela */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

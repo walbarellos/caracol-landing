@@ -1,25 +1,125 @@
 <!-- components/carousel.html -->
 <section class="carrossel-container" role="region" aria-label="Galeria de imagens do Método Caracol">
-  <div class="carrossel">
 
-    <img src="assets/carrossel/caracol01.jpg" alt="Ilustração espiral com fundo roxo escuro e brilho central" />
-    <img src="assets/carrossel/caracol02.jpg" alt="Símbolo do caracol estilizado sobre matriz hexagonal" />
-    <img src="assets/carrossel/caracol03.jpg" alt="Morfologia caracólica em fundo nebuloso com partículas" />
-    <img src="assets/carrossel/caracol04.jpg" alt="Arte abstrata com traços concêntricos em tons lilás" />
-    <img src="assets/carrossel/caracol05.jpg" alt="Representação espiralada com textura metálica e profundidade" />
-    <img src="assets/carrossel/caracol06.jpg" alt="Simetria dourada em espiral sobre fundo preto absoluto" />
-    <img src="assets/carrossel/caracol07.jpg" alt="Mandala caracol com efeitos neon e brilho suave" />
-    <img src="assets/carrossel/caracol08.jpg" alt="Símbolo do caracol sobre fundo com textura orgânica" />
-    <img src="assets/carrossel/caracol09.jpg" alt="Caracol dourado com aura violeta e fundo cósmico" />
-    <img src="assets/carrossel/caracol10.jpg" alt="Espaço visual vazio com estrutura espiral sutil no centro" />
-    <img src="assets/carrossel/caracol11.jpg" alt="Geometria fractal com caracol formado por linhas vetoriais" />
-    <img src="assets/carrossel/caracol12.jpg" alt="Caracol translúcido com gradientes violetas e amarelos" />
-    <img src="assets/carrossel/caracol13.jpg" alt="Representação circular com efeito vitral e símbolo central" />
-    <img src="assets/carrossel/caracol14.jpg" alt="Ilustração centralizada com símbolo caracol sobre névoa branca" />
-    <img src="assets/carrossel/caracol15.jpg" alt="Espaço negro profundo com espiral de energia azul" />
-    <img src="assets/carrossel/caracol16.jpg" alt="Detalhe ampliado da concha espiral em estilo artístico" />
-    <img src="assets/carrossel/caracol17.jpg" alt="Símbolo do caracol translúcido em fundo digitalizado" />
-    <img src="assets/carrossel/caracol18.jpg" alt="Encerramento visual: espiral fechada sobre fundo minimalista" />
+  <!-- 🔁 Setas de navegação acessíveis -->
+  <button class="carrossel-seta esquerda" aria-label="Imagem anterior" onclick="scrollCarrossel('esquerda')">◀</button>
+  <button class="carrossel-seta direita" aria-label="Próxima imagem" onclick="scrollCarrossel('direita')">▶</button>
+
+  <!-- 🔊 Contador para leitores de tela -->
+  <div class="sr-only" aria-live="polite" role="status" id="status-carrossel">Imagem 1 de 18</div>
+
+  <!-- 🎠 Faixa de imagens roláveis -->
+  <div class="carrossel" id="carrossel" tabindex="0">
+
+    <picture>
+      <img src="/assets/carrossel/caracol01.jpg" loading="lazy" alt="Ilustração espiral com fundo roxo escuro e brilho central" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol02.jpg" loading="lazy" alt="Símbolo do caracol estilizado sobre matriz hexagonal" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol03.jpg" loading="lazy" alt="Morfologia caracólica em fundo nebuloso com partículas" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol04.jpg" loading="lazy" alt="Arte abstrata com traços concêntricos em tons lilás" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol05.jpg" loading="lazy" alt="Representação espiralada com textura metálica e profundidade" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol06.jpg" loading="lazy" alt="Simetria dourada em espiral sobre fundo preto absoluto" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol07.jpg" loading="lazy" alt="Mandala caracol com efeitos neon e brilho suave" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol08.jpg" loading="lazy" alt="Símbolo do caracol sobre fundo com textura orgânica" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol09.jpg" loading="lazy" alt="Caracol dourado com aura violeta e fundo cósmico" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol10.jpg" loading="lazy" alt="Espaço visual vazio com estrutura espiral sutil no centro" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol11.jpg" loading="lazy" alt="Geometria fractal com caracol formado por linhas vetoriais" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol12.jpg" loading="lazy" alt="Caracol translúcido com gradientes violetas e amarelos" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol13.jpg" loading="lazy" alt="Representação circular com efeito vitral e símbolo central" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol14.jpg" loading="lazy" alt="Ilustração centralizada com símbolo caracol sobre névoa branca" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol15.jpg" loading="lazy" alt="Espaço negro profundo com espiral de energia azul" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol16.jpg" loading="lazy" alt="Detalhe ampliado da concha espiral em estilo artístico" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol17.jpg" loading="lazy" alt="Símbolo do caracol translúcido em fundo digitalizado" />
+    </picture>
+    <picture>
+      <img src="/assets/carrossel/caracol18.jpg" loading="lazy" alt="Encerramento visual: espiral fechada sobre fundo minimalista" />
 
   </div>
 </section>
+
+<script>
+// 🎠 scrollCarrossel: navegação suave via setas ou teclado
+function scrollCarrossel(direcao) {
+  const carrossel = document.getElementById("carrossel");
+  const largura = carrossel.clientWidth * 0.9;
+
+  carrossel.scrollBy({
+    left: direcao === 'esquerda' ? -largura : largura,
+    behavior: "smooth"
+  });
+}
+
+// 🧠 atualizarSetas + aria-live
+document.addEventListener("DOMContentLoaded", () => {
+  const carrossel = document.getElementById("carrossel");
+  const imagens = carrossel.querySelectorAll("picture");
+  const status = document.getElementById("status-carrossel");
+  const setaE = document.querySelector(".carrossel-seta.esquerda");
+  const setaD = document.querySelector(".carrossel-seta.direita");
+  let ultimo = -1;
+
+  // Detectar rolagem e atualizar estado
+  carrossel.addEventListener("scroll", () => {
+    let maiorVisivel = 0;
+    let imagemAtual = 0;
+
+    imagens.forEach((pic, index) => {
+      const img = pic.querySelector("img");
+      const r = img.getBoundingClientRect();
+      const visivel = Math.max(0, Math.min(r.right, window.innerWidth) - Math.max(r.left, 0));
+      if (visivel > maiorVisivel) {
+        maiorVisivel = visivel;
+        imagemAtual = index;
+      }
+    });
+
+    if (imagemAtual !== ultimo) {
+      const alt = imagens[imagemAtual].querySelector("img").alt;
+      status.textContent = `Imagem ${imagemAtual + 1} de ${imagens.length}: ${alt}`;
+      ultimo = imagemAtual;
+    }
+
+    // Controle de visibilidade das setas
+    setaE.disabled = carrossel.scrollLeft <= 10;
+    setaD.disabled = carrossel.scrollLeft >= carrossel.scrollWidth - carrossel.clientWidth - 10;
+  });
+
+  // Navegação por teclado
+  carrossel.setAttribute("tabindex", "0");
+  carrossel.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") scrollCarrossel("esquerda");
+    if (e.key === "ArrowRight") scrollCarrossel("direita");
+  });
+});
+</script>
