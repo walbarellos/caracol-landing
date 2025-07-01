@@ -1,0 +1,52 @@
+<section class="formulario-container" aria-label="Formulário de autorização para download do Método Caracol">
+  <h2>Antes de baixar, identifique-se</h2>
+  <p class="legenda">Preencha os dados abaixo para acessar gratuitamente o Método Caracol (PDF)</p>
+
+  <form id="caracol-form">
+    <div class="form-grid">
+      <label>
+        Nome completo:
+        <input type="text" name="nome" required />
+      </label>
+
+      <label>
+        Endereço:
+        <input type="text" name="endereco" required />
+      </label>
+
+      <label>
+        Telefone:
+        <input type="tel" name="telefone" required pattern="[\d\s\-\(\)\+]+" />
+      </label>
+
+      <label>
+        Faculdade ou Universidade:
+        <input type="text" name="instituicao" required />
+      </label>
+
+      <label>
+        Gênero:
+        <select name="genero" required>
+          <option value="">Selecione</option>
+          <option value="feminino">Feminino</option>
+          <option value="masculino">Masculino</option>
+          <option value="outro">Outro</option>
+          <option value="nao_dizer">Prefiro não dizer</option>
+        </select>
+      </label>
+
+      <label>
+        Data de nascimento:
+        <input type="date" name="nascimento" required />
+      </label>
+    </div>
+
+    <button type="submit" id="btn-enviar">Enviar e Liberar Download</button>
+  </form>
+
+  <div id="download-container" class="oculto">
+    <a href="assets/caracol-metodo.pdf" download class="botao-download">
+      📥 Baixar Método Caracol (PDF)
+    </a>
+  </div>
+</section>

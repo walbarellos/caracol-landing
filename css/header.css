@@ -1,0 +1,78 @@
+/* ════════════════════════════════════════════════════════════════════════
+🎨 header.css — Método Caracol
+Design elegante, modular e responsivo para o cabeçalho
+═════════════════════════════════════════════════════════════════════════ */
+
+.hero {
+  background: linear-gradient(135deg, #0d0d0d, #1e1e1e);
+  color: #ffffff;
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+  border-bottom: 4px solid #5f27cd;
+  box-shadow: 0 4px 24px rgba(95, 39, 205, 0.3);
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.hero .subtitulo {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.mascote {
+  width: 100px;
+  margin-bottom: 1.5rem;
+  animation: girar 12s linear infinite;
+}
+
+@keyframes girar {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.autor-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  text-align: center;
+}
+
+.foto-autor {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid #5f27cd;
+  object-fit: cover;
+  margin-bottom: 0.3rem;
+}
+
+.nome-autor {
+  font-size: 0.85rem;
+  color: #bbb;
+  font-weight: bold;
+}
+
+/* Responsivo para mobile */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .mascote {
+    width: 70px;
+  }
+
+  .autor-container {
+    position: static;
+    margin-top: 2rem;
+  }
+}
