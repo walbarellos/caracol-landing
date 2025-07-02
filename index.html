@@ -86,9 +86,10 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const container = document.querySelector(".carrossel-container");
-      if (container && window.Carousel && !container.dataset.loaded) {
-        try {
-          new Carousel(container);
+      if (container && window.CaracolCarousel && !container.dataset.loaded) {
+  try {
+    new CaracolCarousel(container);
+
         } catch (erro) {
           console.error("❌ Erro ao instanciar carrossel manual:", erro);
         }

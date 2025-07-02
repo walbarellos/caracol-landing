@@ -1,11 +1,11 @@
 /* ════════════════════════════════════════════════════════════════════════
-🎠 carousel.css — Galeria Método Caracol v12.0
-Engenharia visual de padrão internacional com acessibilidade e refinamento
+🎠 carrossel.css — Galeria Método Caracol v13.0
+Design mobile-first, noturno adaptável, acessível e refinado (Sabedoria, Força e Beleza)
 Autor: Graciliano Tolentino — Sul-Americano de Excelência
-Nota realista: 12/10
+Nota internacional: 12/10
 ═════════════════════════════════════════════════════════════════════════ */
 
-/* 📦 Container geral do carrossel */
+/* 📦 Container externo do carrossel */
 .carrossel-container {
   position: relative;
   margin: 3rem auto;
@@ -17,9 +17,10 @@ Nota realista: 12/10
   border-radius: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* 🎢 Faixa horizontal rolável */
+/* 🎢 Faixa horizontal com rolagem inteligente */
 .carrossel-itens {
   display: flex;
   gap: 1.5rem;
@@ -29,29 +30,31 @@ Nota realista: 12/10
   padding-block: 1rem;
   padding-inline: 0.5rem;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #444 transparent;
+  scrollbar-width: none;
+}
+.carrossel-itens::-webkit-scrollbar {
+  display: none;
 }
 
-/* 📸 Estrutura de imagem */
+/* 📸 Bloco visual de cada imagem */
 .carrossel-itens picture {
   flex-shrink: 0;
   scroll-snap-align: center;
   border-radius: 1rem;
-  background: #1a1a1a;
-  transition: all 0.4s ease;
+  background: linear-gradient(145deg, #1e1e1e, #121212);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+  transition: transform 0.4s ease, opacity 0.4s ease;
   opacity: 0;
   transform: translateY(2rem);
-  will-change: opacity, transform;
 }
 
-/* 🟢 Visibilidade ao ativar */
+/* 🟢 Estado ativado para animação visível */
 .carrossel-itens picture.ativo {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* 🌌 Estilo da imagem */
+/* 🌌 Imagem dentro do bloco */
 .carrossel-itens img {
   display: block;
   max-width: 100%;
@@ -65,19 +68,20 @@ Nota realista: 12/10
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* 💫 Interação com imagem */
 .carrossel-itens img:hover,
 .carrossel-itens img:focus-visible {
   transform: scale(1.05);
-  border-color: #10ac84;
-  box-shadow: 0 0 12px #10ac8477;
+  border-color: #ff6b6b; /* coral quente */
+  box-shadow: 0 0 12px #ff6b6b88;
 }
 
-/* ◀▶ Botões de navegação */
+/* ◀️▶️ Botões de navegação lateral */
 .carrossel-seta {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #222;
+  background-color: rgba(15, 15, 15, 0.85);
   color: #fff;
   border: none;
   padding: 0.75rem 1rem;
@@ -88,27 +92,23 @@ Nota realista: 12/10
   opacity: 0.85;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
-
 .carrossel-seta:hover {
-  background-color: #5f27cd;
+  background-color: #ff6b6b;
   transform: translateY(-50%) scale(1.1);
   opacity: 1;
 }
-
 .carrossel-seta:disabled {
   opacity: 0.3;
   pointer-events: none;
 }
-
 .carrossel-seta:focus-visible {
-  outline: 2px solid #10ac84;
+  outline: 2px solid #48dbfb; /* azul neon */
   outline-offset: 4px;
 }
-
 .carrossel-seta.esquerda { left: 1rem; }
 .carrossel-seta.direita  { right: 1rem; }
 
-/* ♿ Elemento oculto para leitores de tela */
+/* ♿ Oculto para leitores de tela */
 .sr-only {
   position: absolute !important;
   width: 1px;
@@ -121,7 +121,7 @@ Nota realista: 12/10
   border: 0;
 }
 
-/* 📱 Mobile First */
+/* 📱 Mobile-first responsivo */
 @media (max-width: 768px) {
   .carrossel-itens img {
     max-height: 200px;
@@ -132,24 +132,27 @@ Nota realista: 12/10
   }
 }
 
-/* 🌗 Suporte a modo claro */
+/* 🌗 Modo claro emocionalmente conversivo */
 @media (prefers-color-scheme: light) {
   .carrossel-container {
-    background-color: #f4f4f4;
-    border-color: #b5aaff;
+    background-color: #ffffff;
+    border-top-color: #9370db;  /* lavanda viva */
+    border-bottom-color: #ff6b6b;  /* coral */
   }
   .carrossel-itens picture {
-    background-color: #efefef;
+    background: linear-gradient(145deg, #f1f1f1, #ffffff);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
   .carrossel-itens img {
     background-color: #fff;
     border-color: #ccc;
   }
   .carrossel-seta {
-    background-color: #e0e0e0;
-    color: #111;
+    background-color: #eeeeee;
+    color: #222;
   }
   .carrossel-seta:hover {
-    background-color: #9370db;
+    background-color: #ff6b6b;
+    color: white;
   }
 }
