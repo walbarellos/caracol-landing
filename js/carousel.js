@@ -1,88 +1,102 @@
 // ════════════════════════════════════════════════════════════════════════
-// 🎠 carousel.js — Galeria Modular Método Caracol v12.0
-// Engenharia refinada, acessível, reativa e 100% compatível com HTML dinâmico
+// 🎠 carousel.js — Navegação inteligente com acessibilidade e elegância
+// Método Caracol v13.0 — Sabedoria, Força e Beleza semântico-funcional
+// Projeto internacional de engenharia front-end com padrão 12/10
 // Autor: Graciliano Tolentino — O Engenheiro de Software da América do Sul
-// Classificação realista: 12/10 — Padrão Internacional Ético e Escalável
 // ════════════════════════════════════════════════════════════════════════
 
 "use strict";
 
-class Carousel {
+class CaracolCarousel {
   constructor(container) {
     if (!(container instanceof HTMLElement)) {
-      console.error("❌ Container inválido para carrossel.");
+      console.error("❌ Elemento inválido passado ao construtor do carrossel.");
       return;
     }
 
     this.container = container;
-    this.itens = container.querySelector(".carrossel-itens");
-    this.pictures = Array.from(this.itens?.querySelectorAll("picture") || []);
+    this.track = container.querySelector(".carrossel-itens");
+    this.pictures = Array.from(this.track?.querySelectorAll("picture") || []);
     this.setaEsquerda = container.querySelector(".carrossel-seta.esquerda");
     this.setaDireita = container.querySelector(".carrossel-seta.direita");
-    this.statusSR = this.#criarStatusAcessibilidade();
+    this.status = this.#criarStatusAcessibilidade();
 
     this.raf = null;
-    this.#configurar();
-    this.#ativarEventos();
-    this.#atualizar();
+    this.#configurarTrack();
+    this.#vincularEventos();
+    this.#atualizarEstado();
   }
 
-  #configurar() {
-    this.itens.setAttribute("tabindex", "0");
-    this.itens.setAttribute("role", "region");
-    this.itens.setAttribute("aria-label", "Galeria de imagens interativa");
-    this.itens.scrollLeft = 0;
+  // ════════════════════════════════════════════════════════════════════════
+  // 🔧 Configuração inicial do carrossel e seu comportamento de rolagem
+  // ════════════════════════════════════════════════════════════════════════
+  #configurarTrack() {
+    this.track.setAttribute("tabindex", "0");
+    this.track.setAttribute("role", "region");
+    this.track.setAttribute("aria-label", "Carrossel de imagens com navegação por teclado");
+    this.track.scrollLeft = 0;
   }
 
-  #ativarEventos() {
-    this.itens.addEventListener("scroll", () => {
+  // ════════════════════════════════════════════════════════════════════════
+  // 🎮 Vincula eventos de clique, teclado e rolagem para navegação fluida
+  // ════════════════════════════════════════════════════════════════════════
+  #vincularEventos() {
+    this.track.addEventListener("scroll", () => {
       cancelAnimationFrame(this.raf);
-      this.raf = requestAnimationFrame(() => this.#atualizar());
+      this.raf = requestAnimationFrame(() => this.#atualizarEstado());
     });
 
-    this.setaEsquerda?.addEventListener("click", () => this.#scroll(-1));
-    this.setaDireita?.addEventListener("click", () => this.#scroll(1));
+    this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
+    this.setaDireita?.addEventListener("click", () => this.#rolar(1));
 
-    this.itens.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") this.#scroll(-1);
-      if (e.key === "ArrowRight") this.#scroll(1);
+    this.track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") this.#rolar(-1);
+      if (e.key === "ArrowRight") this.#rolar(1);
     });
   }
 
-  #scroll(direcao) {
-    const distancia = this.itens.clientWidth * 0.9;
-    this.itens.scrollBy({
-      left: direcao * distancia,
+  // ════════════════════════════════════════════════════════════════════════
+  // 📐 Lógica de rolagem proporcional à largura visível da faixa
+  // ════════════════════════════════════════════════════════════════════════
+  #rolar(direcao) {
+    const passo = this.track.clientWidth * 0.9;
+    this.track.scrollBy({
+      left: direcao * passo,
       behavior: "smooth"
     });
   }
 
-  #atualizar() {
+  // ════════════════════════════════════════════════════════════════════════
+  // 🔍 Atualiza visualmente o carrossel e o status de acessibilidade
+  // ════════════════════════════════════════════════════════════════════════
+  #atualizarEstado() {
     const visiveis = this.pictures.map((pic, i) => {
       const img = pic.querySelector("img");
-      const r = img.getBoundingClientRect();
-      const visivel = Math.max(0, Math.min(r.right, window.innerWidth) - Math.max(r.left, 0));
-      return { i, visivel };
+      if (!img) return { i, visivel: 0 };
+      const rect = img.getBoundingClientRect();
+      const larguraVisivel = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
+      return { i, visivel: larguraVisivel };
     });
 
     const maisVisivel = visiveis.reduce((a, b) => (a.visivel > b.visivel ? a : b), { i: 0, visivel: 0 });
     const atual = maisVisivel.i;
 
-    // Atualiza classes visuais
     this.pictures.forEach((pic, i) => {
       pic.classList.toggle("ativo", i === atual);
     });
 
-    // Atualiza acessibilidade
-    const alt = this.pictures[atual].querySelector("img").alt;
-    this.statusSR.textContent = `Imagem ${atual + 1} de ${this.pictures.length}: ${alt}`;
+    const imagemAtual = this.pictures[atual]?.querySelector("img");
+    const descricao = imagemAtual?.alt || "imagem sem descrição";
+    this.status.textContent = `Imagem ${atual + 1} de ${this.pictures.length}: ${descricao}`;
 
-    // Atualiza setas
-    const scrollMax = this.itens.scrollWidth - this.itens.clientWidth;
-    this.setaEsquerda.disabled = this.itens.scrollLeft <= 10;
-    this.setaDireita.disabled = this.itens.scrollLeft >= scrollMax - 10;
+    const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+    this.setaEsquerda.disabled = this.track.scrollLeft <= 10;
+    this.setaDireita.disabled = this.track.scrollLeft >= maxScroll - 10;
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  // 🔊 Elemento invisível para leitores de tela com status dinâmico
+  // ════════════════════════════════════════════════════════════════════════
   #criarStatusAcessibilidade() {
     const div = document.createElement("div");
     div.className = "sr-only";
@@ -93,5 +107,5 @@ class Carousel {
   }
 }
 
-// 🌍 Exportação global segura
-window.Carousel = Carousel;
+// 🌐 Registro global seguro para múltiplas instâncias futuras
+window.CaracolCarousel = CaracolCarousel;
