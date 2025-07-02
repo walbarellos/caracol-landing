@@ -59,10 +59,21 @@ class CaracolCarousel {
   }
 
   #scrollTo(idx) {
-    const pic = this.pictures[idx];
-    const offset = pic.offsetLeft - (this.track.clientWidth / 2 - pic.clientWidth / 2);
-    this.track.scrollTo({ left: offset, behavior: "smooth" });
-  }
+  const pic = this.pictures[idx];
+
+  const trackRect = this.track.getBoundingClientRect();
+  const picRect = pic.getBoundingClientRect();
+
+  const currentScroll = this.track.scrollLeft;
+  const offset = pic.offsetLeft - this.track.offsetLeft;
+
+  const centerOffset = offset - (this.track.clientWidth / 2) + (pic.clientWidth / 2);
+
+  this.track.scrollTo({
+    left: centerOffset,
+    behavior: "smooth"
+  });
+}
 
   #update() {
     this.pictures.forEach((p, i) => p.classList.toggle("ativo", i === this.current));
