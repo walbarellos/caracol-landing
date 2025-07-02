@@ -14,7 +14,7 @@ class CaracolCarousel {
     }
 
     // 🔐 Evita reexecução
-    if (container.dataset.iniciado === "true") return;
+    if (container.dataset.loaded === "true") return;
 
     this.container = container;
     this.track = container.querySelector(".carrossel-itens");
@@ -29,19 +29,15 @@ class CaracolCarousel {
     this.#atualizarEstado();
 
     // 🧠 Marca como iniciado
-    container.dataset.iniciado = "true";
+    container.dataset.loaded = "true";
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔧 Configuração inicial do carrossel e seu comportamento de rolagem
-  // ════════════════════════════════════════════════════════════════════════
   #configurarTrack() {
     this.track.setAttribute("tabindex", "0");
     this.track.setAttribute("role", "region");
     this.track.setAttribute("aria-label", "Carrossel de imagens com navegação por teclado");
     this.track.scrollLeft = 0;
 
-    // 🎯 Inicia autoplay se habilitado via data-atributo
     this.autoplayDelay = parseInt(this.container.dataset.autoplay || "0", 10);
     this.loop = this.container.dataset.loop === "true";
     this.autoplayAtivo = false;
@@ -51,9 +47,6 @@ class CaracolCarousel {
     }
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🎮 Eventos de clique, teclado, rolagem e pausa por acessibilidade
-  // ════════════════════════════════════════════════════════════════════════
   #vincularEventos() {
     this.track.addEventListener("scroll", () => {
       cancelAnimationFrame(this.raf);
@@ -73,9 +66,6 @@ class CaracolCarousel {
     this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 📐 Rola o carrossel com passo proporcional
-  // ════════════════════════════════════════════════════════════════════════
   #rolar(direcao) {
     const passo = this.track.clientWidth * 0.9;
     this.track.scrollBy({
@@ -84,9 +74,6 @@ class CaracolCarousel {
     });
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔍 Atualiza visualmente o carrossel e o status de acessibilidade
-  // ════════════════════════════════════════════════════════════════════════
   #atualizarEstado() {
     const visiveis = this.pictures.map((pic, i) => {
       const img = pic.querySelector("img");
@@ -107,12 +94,10 @@ class CaracolCarousel {
     const descricao = imagemAtual?.alt || "imagem sem descrição";
     this.status.textContent = `Imagem ${atual + 1} de ${this.pictures.length}: ${descricao}`;
 
-    // 🎯 Desativa botões se aplicável
     const maxScroll = this.track.scrollWidth - this.track.clientWidth;
     this.setaEsquerda.disabled = this.track.scrollLeft <= 10;
     this.setaDireita.disabled = this.track.scrollLeft >= maxScroll - 10;
 
-    // 📢 Dispara evento externo para integração
     this.container.dispatchEvent(new CustomEvent("carrosselAtualizado", {
       detail: {
         index: atual,
@@ -122,9 +107,6 @@ class CaracolCarousel {
     }));
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔊 Elemento invisível para leitores de tela com status dinâmico
-  // ════════════════════════════════════════════════════════════════════════
   #criarStatusAcessibilidade() {
     const div = document.createElement("div");
     div.className = "sr-only";
@@ -134,9 +116,6 @@ class CaracolCarousel {
     return div;
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔁 Autoplay com pausa automática
-  // ════════════════════════════════════════════════════════════════════════
   #iniciarAutoplay() {
     this.autoplayAtivo = true;
     const executar = () => {
@@ -161,5 +140,4 @@ class CaracolCarousel {
   }
 }
 
-// 🌐 Registro global seguro para múltiplas instâncias futuras
 window.CaracolCarousel = CaracolCarousel;
