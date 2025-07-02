@@ -1,37 +1,45 @@
 /* ════════════════════════════════════════════════════════════════════════
-🎨 header.css — Método Caracol
-Design elegante, modular e responsivo para o cabeçalho
-═════════════════════════════════════════════════════════════════════════ */
+🎨 header.css — Método Caracol v3.0
+Estética institucional, responsiva, refinada e acessível com perfeição
+═══════════════════════════════════════════════════════════════════════ */
 
+/* 🎯 Container principal do cabeçalho */
 .hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  text-align: center;
+  padding: 4rem 2rem 3rem;
   background: linear-gradient(135deg, #0d0d0d, #1e1e1e);
   color: #ffffff;
-  text-align: center;
-  padding: 4rem 2rem;
-  position: relative;
   border-bottom: 4px solid #5f27cd;
   box-shadow: 0 4px 24px rgba(95, 39, 205, 0.3);
+  position: relative;
 }
 
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  font-family: 'Poppins', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+/* 🌀 Bloco superior com logo e texto */
+.hero-topo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.hero .subtitulo {
-  font-size: 1.2rem;
-  font-weight: 300;
-  color: #ccc;
-  line-height: 1.6;
+.hero-texto {
+  max-width: 540px;
 }
 
+/* 🔁 Mascote animado */
 .mascote {
-  width: 100px;
-  margin-bottom: 1.5rem;
-  animation: girar 12s linear infinite;
+  width: 96px;
+  height: 96px;
+  animation: girar 16s linear infinite;
+  border-radius: 50%;
+  object-fit: contain;
+  border: 2px solid #5f27cd;
+  box-shadow: 0 0 12px rgba(95, 39, 205, 0.4);
 }
 
 @keyframes girar {
@@ -39,40 +47,64 @@ Design elegante, modular e responsivo para o cabeçalho
   100% { transform: rotate(360deg); }
 }
 
+/* 🧠 Título e subtítulo */
+.titulo-site {
+  font-size: 2.75rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.5rem;
+}
+
+.subtitulo {
+  font-size: 1.125rem;
+  font-weight: 300;
+  color: #cccccc;
+  line-height: 1.6;
+}
+
+/* 👤 Bloco do autor */
 .autor-container {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
 }
 
 .foto-autor {
-  width: 70px;
-  height: 70px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
-  border: 2px solid #5f27cd;
   object-fit: cover;
-  margin-bottom: 0.3rem;
+  border: 2px solid #10ac84;
+  box-shadow: 0 0 8px #10ac8477;
 }
 
 .nome-autor {
-  font-size: 0.85rem;
-  color: #bbb;
-  font-weight: bold;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #10ac84;
 }
 
-/* Responsivo para mobile */
+/* 📱 Responsividade refinada */
 @media (max-width: 768px) {
-  .hero h1 {
+  .titulo-site {
     font-size: 2rem;
   }
 
   .mascote {
-    width: 70px;
+    width: 72px;
+    height: 72px;
   }
 
-  .autor-container {
-    position: static;
-    margin-top: 2rem;
+  .foto-autor {
+    width: 72px;
+    height: 72px;
+  }
+
+  .subtitulo {
+    font-size: 1rem;
   }
 }

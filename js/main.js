@@ -1,9 +1,9 @@
-// main.js — Montagem Modular Caracol v3.0
-// Refinado para alto desempenho, acessibilidade total e escalabilidade internacional
+// main.js — Montagem Modular Método Caracol v4.0
+// Arquitetado com sabedoria, força e beleza
 
 "use strict";
 
-// 🌐 Caminhos centralizados para fácil manutenção
+// 🌐 Caminhos centralizados
 const componentes = {
   header: "components/header.html",
   carousel: "components/carousel.html",
@@ -12,43 +12,40 @@ const componentes = {
 };
 
 /**
- * 🚀 Carrega componente HTML em seu container
- * @param {string} id - ID do container
- * @param {string} caminho - Caminho do componente HTML
- * @param {Function} callback - Função pós-carregamento (opcional)
+ * 🚀 Carrega um componente e executa callback após o carregamento
  */
 async function carregarComponente(id, caminho, callback = null) {
-  if (!window.fetch || !window.Promise) {
-    document.getElementById(id).innerHTML = `
-      <div class="toast-erro">⚠️ Navegador desatualizado. Atualize para uma experiência completa.</div>
-    `;
+  const container = document.getElementById(id);
+
+  if (!window.fetch || !window.Promise || !container) {
+    container.innerHTML = `<div class="toast-erro">⚠️ Navegador não suportado.</div>`;
     return;
   }
 
   try {
     const resposta = await fetch(caminho);
-    if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
+    if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status}`);
     const html = await resposta.text();
-    const container = document.getElementById(id);
     container.innerHTML = html;
     container.dataset.loaded = "true";
     if (typeof callback === "function") callback();
   } catch (erro) {
     console.error(`Erro ao carregar ${caminho}:`, erro);
-    document.getElementById(id).innerHTML = `
-      <div class="toast-erro">⚠️ Falha ao carregar <strong>${caminho}</strong>. Verifique sua conexão.</div>
-    `;
+    container.innerHTML = `<div class="toast-erro">❌ Falha ao carregar <strong>${caminho}</strong>.</div>`;
   }
 }
 
 /**
- * 🚀 Carrega todos os componentes em paralelo
+ * 🚀 Carrega todos os componentes principais
  */
 async function carregarTodosComponentes() {
   await Promise.all([
     carregarComponente("header-container", componentes.header),
     carregarComponente("carousel-container", componentes.carousel, () => {
-      inicializarTodosCarrosseis();
+      if (typeof window.Carousel === "function") {
+        const container = document.querySelector(".carrossel-container");
+        if (container) new Carousel(container);
+      }
     }),
     carregarComponente("form-container", componentes.form, () => {
       inicializarFormulario();
@@ -59,23 +56,7 @@ async function carregarTodosComponentes() {
 }
 
 /**
- * 🌀 Instancia todos os carrosséis encontrados na página
- */
-function inicializarTodosCarrosseis() {
-  const containers = document.querySelectorAll(".carrossel-container");
-  if (!window.Carousel || !containers.length) return;
-
-  containers.forEach((container) => {
-    try {
-      new Carousel(container);
-    } catch (erro) {
-      console.warn("Falha ao inicializar carrossel:", erro);
-    }
-  });
-}
-
-/**
- * 🧾 Valida e libera formulário de forma acessível
+ * 🧾 Inicializa formulário com validação acessível
  */
 function inicializarFormulario() {
   const form = document.getElementById("caracol-form");
@@ -95,10 +76,10 @@ function inicializarFormulario() {
 
     campos.forEach((campo) => {
       if (!campo.value.trim()) {
-        valido = false;
         campo.classList.add("erro");
         campo.setAttribute("aria-invalid", "true");
         campo.setCustomValidity("Campo obrigatório");
+        valido = false;
       } else {
         campo.classList.remove("erro");
         campo.removeAttribute("aria-invalid");
@@ -109,16 +90,18 @@ function inicializarFormulario() {
     if (valido) {
       form.style.display = "none";
       download.classList.remove("oculto");
-      status.textContent = "Formulário enviado com sucesso. Download liberado.";
+      const link = download.querySelector("a");
+      if (link) link.focus();
+      status.textContent = "✅ Formulário enviado. Download liberado.";
     } else {
       form.reportValidity();
-      status.textContent = "Preencha todos os campos obrigatórios para continuar.";
+      status.textContent = "⚠️ Por favor, preencha todos os campos obrigatórios.";
     }
   });
 }
 
 /**
- * 🔍 Observa o formulário após injeção dinâmica
+ * 🔍 Observa o contêiner de formulário para inicialização segura
  */
 function observarFormulario() {
   const alvo = document.getElementById("form-container");
@@ -127,13 +110,14 @@ function observarFormulario() {
   const observer = new MutationObserver(() => {
     const form = document.getElementById("caracol-form");
     const download = document.getElementById("download-container");
+
     if (form && download) {
       observer.disconnect();
       if (!form.querySelector("[type='submit']")) {
         const erro = document.createElement("div");
         erro.className = "toast-erro";
         erro.setAttribute("role", "alert");
-        erro.textContent = "Erro ao montar o formulário. Tente atualizar a página.";
+        erro.textContent = "❌ Erro ao carregar o formulário.";
         form.appendChild(erro);
       }
     }
@@ -142,5 +126,5 @@ function observarFormulario() {
   observer.observe(alvo, { childList: true, subtree: true });
 }
 
-// 🚀 Início automático
+// 🚀 Inicialização global segura
 document.addEventListener("DOMContentLoaded", carregarTodosComponentes);

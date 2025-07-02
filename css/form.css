@@ -1,7 +1,7 @@
 /* ════════════════════════════════════════════════════════════════════════
 🧾 form.css — Formulário Caracol
 Responsivo, claro, elegante e focado em conversão e acessibilidade
-═════════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 
 .formulario-container {
   background-color: #0e0e0e;
@@ -28,6 +28,7 @@ Responsivo, claro, elegante e focado em conversão e acessibilidade
   color: #ccc;
 }
 
+/* 🧱 Grade de campos */
 .form-grid {
   display: grid;
   gap: 1.5rem;
@@ -61,6 +62,14 @@ Responsivo, claro, elegante e focado em conversão e acessibilidade
   border-color: #10ac84;
 }
 
+/* ⚠️ Validação com erro */
+.erro {
+  border: 2px solid #ff4d4d !important;
+  background-color: #2a0000;
+  color: #fff;
+}
+
+/* 📤 Botão de envio */
 #btn-enviar {
   margin-top: 2rem;
   padding: 0.75rem 2rem;
@@ -77,6 +86,7 @@ Responsivo, claro, elegante e focado em conversão e acessibilidade
   background-color: #1dd1a1;
 }
 
+/* 📥 Botão de download liberado */
 .botao-download {
   display: inline-block;
   margin-top: 2rem;
@@ -93,12 +103,12 @@ Responsivo, claro, elegante e focado em conversão e acessibilidade
   background-color: #8e44ad;
 }
 
-/* Esconde o botão de download inicialmente */
+/* 🙈 Container oculto */
 .oculto {
   display: none;
 }
 
-/* Responsivo para mobile */
+/* ♿ Responsividade para mobile */
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;

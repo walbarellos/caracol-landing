@@ -15,13 +15,13 @@
   <meta property="og:url" content="https://caracol.tec.br" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- 🎯 Favicon otimizado -->
+  <!-- 🎯 Favicon e Manifesto -->
   <link rel="icon" href="assets/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="manifest" href="site.webmanifest" />
 
-  <!-- ✍️ Tipografia -->
+  <!-- ✍️ Tipografia Oficial -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;700&display=swap" rel="stylesheet" />
@@ -29,7 +29,7 @@
   <!-- 📘 Título -->
   <title>Método Caracol – Sabedoria, Força e Beleza</title>
 
-  <!-- 🎨 Estilos -->
+  <!-- 🎨 Estilos Modulares -->
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/header.css" />
   <link rel="stylesheet" href="css/carousel.css" />
@@ -39,49 +39,46 @@
 
 <body>
 
-  <!-- 🌟 Cabeçalho semântico -->
-  <header id="header-container" role="banner" aria-label="Cabeçalho principal do site">
+  <!-- 🌟 Cabeçalho semântico (conteúdo dinâmico via fetch) -->
+  <header id="header-container">
     <!-- Inserido dinamicamente -->
   </header>
 
-  <!-- 🐚 Carrossel com autoplay e loop -->
-  <section class="carrossel-container" data-autoplay="6000" data-loop="true" role="region" aria-label="Galeria Método Caracol">
+  <!-- 🐚 Carrossel com suporte a autoplay e loop -->
+  <section class="carrossel-container" data-autoplay="6000" data-loop="true">
     <button class="carrossel-seta esquerda" aria-label="Imagem anterior">◀</button>
 
-    <div id="carrossel" class="carrossel-itens" tabindex="0">
-      <picture>
-        <img src="assets/carrossel/caracol01.jpg" alt="Espiral roxa com brilho central" loading="lazy" width="480" height="320" />
-      </picture>
-      <picture>
-        <img src="assets/carrossel/caracol02.jpg" alt="Símbolo caracol sobre matriz hexagonal" loading="lazy" width="480" height="320" />
-      </picture>
-      <!-- ... outras imagens -->
+    <div id="carrossel" class="carrossel-itens" tabindex="0" aria-label="Lista de imagens em rolagem horizontal">
+      <!-- Imagens inseridas dinamicamente ou diretamente -->
     </div>
 
     <button class="carrossel-seta direita" aria-label="Próxima imagem">▶</button>
   </section>
 
-  <!-- 🧾 Formulário do Método Caracol -->
-  <main id="form-container" role="main" aria-label="Formulário de download gratuito">
-    <!-- Conteúdo do formulário inserido dinamicamente -->
+  <!-- 🧾 Formulário -->
+  <main id="form-container">
+    <!-- Inserido dinamicamente -->
   </main>
 
-  <!-- 🧠 Rodapé institucional -->
-  <footer id="footer-container" role="contentinfo" aria-label="Rodapé com informações do autor">
-    <!-- Conteúdo dinâmico -->
+  <!-- 🧠 Rodapé com informações institucionais -->
+  <footer id="footer-container">
+    <!-- Inserido dinamicamente -->
   </footer>
 
   <!-- ⚠️ Fallback para navegadores sem JS -->
   <noscript>
     <div class="no-js-warning" role="alert" style="padding: 1rem; background: #ffefef; color: #a00; text-align: center;">
       <p><strong>⚠️ Este site requer JavaScript para funcionar corretamente.</strong></p>
-      <p>Você pode <a href="metodo-caracol.pdf" style="color: #a00;">baixar o PDF diretamente aqui</a>.</p>
+      <p>Você pode <a href="assets/caracol-metodo.pdf" style="color: #a00;">baixar o PDF diretamente aqui</a>.</p>
     </div>
   </noscript>
 
-  <!-- 🧠 Scripts Modulares -->
+  <!-- 🧠 Scripts finais com ordem estratégica -->
+  <script src="js/main.js" defer></script>
   <script src="js/carousel.js" defer></script>
+
   <script>
+    // 🌀 Inicializa o carrossel após carregamento completo
     document.addEventListener("DOMContentLoaded", () => {
       const container = document.querySelector(".carrossel-container");
       if (container && window.Carousel) {

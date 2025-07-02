@@ -1,66 +1,84 @@
-/* ════════════════════════════════════════════════════════════════════════
-🧾 footer.css — Rodapé Caracolístico
-Estética limpa e institucional para a biografia do autor
-═════════════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════════
+🧾 footer.css — Rodapé Método Caracol v3.0
+Estética institucional refinada, acessibilidade e responsividade de excelência
+═════════════════════════════════════════════════════════════════════════════ */
 
 .footer {
   background-color: #0b0b0b;
-  color: #eee;
+  color: #eeeeee;
   padding: 3rem 1.5rem;
-  border-top: 3px solid #5f27cd;
   text-align: center;
+  border-top: 4px solid #5f27cd;
+  box-shadow: inset 0 6px 12px rgba(95, 39, 205, 0.1);
 }
 
 .bio {
-  max-width: 800px;
+  max-width: 840px;
   margin: 0 auto;
   font-family: 'Poppins', sans-serif;
 }
 
 .bio h2 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin-bottom: 1rem;
   color: #5f27cd;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
 
 .bio p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #ccc;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #cccccc;
   margin-bottom: 1rem;
 }
 
+/* 🔗 Links sociais */
 .social-links {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .social-links a {
-  display: inline-block;
-  margin: 0 1rem;
-  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
   color: #10ac84;
   text-decoration: none;
-  transition: color 0.3s;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .social-links a:hover {
   color: #1dd1a1;
+  transform: translateY(-2px);
 }
 
-/* Responsividade */
+.social-link.linkedin::before {
+  content: "💼";
+}
+
+.social-link.facebook::before {
+  content: "📘";
+}
+
+/* 📱 Responsividade refinada */
 @media (max-width: 768px) {
   .bio h2 {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
   }
 
   .bio p {
     font-size: 0.95rem;
   }
 
-  .social-links a {
-    display: block;
-    margin: 0.5rem 0;
+  .social-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 }
