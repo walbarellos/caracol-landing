@@ -130,20 +130,31 @@ class CaracolCarousel {
     return div;
   }
 
-  #iniciarAutoplay() {
-    this.autoplayAtivo = true;
-    const executar = () => {
-      if (!this.autoplayAtivo) return;
-      this.#rolar(1);
+#iniciarAutoplay() {
+  this.autoplayAtivo = true;
 
-      this._autoplayTimer = setTimeout(() => {
-        if (this.loop || this.setaDireita?.disabled === false) {
-          executar();
-        }
-      }, this.autoplayDelay);
-    };
+  const executar = () => {
+    if (!this.autoplayAtivo) return;
+
+    const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
+    const noFim = atualIndex === this.pictures.length - 1;
+
+    if (!this.loop && noFim) {
+      this.#pausarAutoplayTemporariamente(); // Pausa no fim se não for loop
+      return;
+    }
+
+    this.#rolar(1); // Avança
+
+    this._autoplayTimer = setTimeout(() => {
+      executar(); // Próxima rolagem
+    }, this.autoplayDelay);
+  };
+
+  this._autoplayTimer = setTimeout(() => {
     executar();
-  }
+  }, this.autoplayDelay);
+}
 
   #pausarAutoplayTemporariamente() {
     this.autoplayAtivo = false;
