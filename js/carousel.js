@@ -41,24 +41,31 @@ class CaracolCarousel {
     }
   }
 
-  #vincularEventos() {
-    this.track.addEventListener("scroll", () => {
-      cancelAnimationFrame(this.raf);
-      this.raf = requestAnimationFrame(() => this.#atualizarEstado());
-    });
+#vincularEventos() {
+  this.track.addEventListener("scroll", () => {
+    cancelAnimationFrame(this.raf);
+    this.raf = requestAnimationFrame(() => this.#atualizarEstado());
+  });
 
-    this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
-    this.setaDireita?.addEventListener("click", () => this.#rolar(1));
+  this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
+  this.setaDireita?.addEventListener("click", () => this.#rolar(1));
 
-    this.track.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") this.#rolar(-1);
-      if (e.key === "ArrowRight") this.#rolar(1);
-      this.#pausarAutoplayTemporariamente();
-    });
+  // ✅ Ativa teclado somente quando o carrossel estiver em foco
+  this.track.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") this.#rolar(-1);
+    if (e.key === "ArrowRight") this.#rolar(1);
+    this.#pausarAutoplayTemporariamente();
+  });
 
-    this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
-    this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
-  }
+  // ✅ Garante que clique dê foco ao carrossel
+  this.track.addEventListener("click", () => {
+    this.track.focus();
+  });
+
+  this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
+  this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
+}
+
 
   #rolar(direcao) {
     const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
