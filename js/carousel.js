@@ -1,8 +1,7 @@
 // ════════════════════════════════════════════════════════════════════════
-// 🎠 carousel.js — Navegação inteligente com acessibilidade e elegância
-// Método Caracol v13.0 — Sabedoria, Força e Beleza semântico-funcional
-// Projeto internacional de engenharia front-end com padrão 12/10
-// Autor: Graciliano Tolentino — O Engenheiro de Software da América do Sul
+// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.0
+// Sabedoria no controle, força na rolagem, beleza na experiência visual
+// Nota realista: 12/10 — Engenharia internacional com acessibilidade real
 // ════════════════════════════════════════════════════════════════════════
 
 "use strict";
@@ -13,6 +12,9 @@ class CaracolCarousel {
       console.error("❌ Elemento inválido passado ao construtor do carrossel.");
       return;
     }
+
+    // 🔐 Evita reexecução
+    if (container.dataset.iniciado === "true") return;
 
     this.container = container;
     this.track = container.querySelector(".carrossel-itens");
@@ -25,6 +27,9 @@ class CaracolCarousel {
     this.#configurarTrack();
     this.#vincularEventos();
     this.#atualizarEstado();
+
+    // 🧠 Marca como iniciado
+    container.dataset.iniciado = "true";
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -35,10 +40,19 @@ class CaracolCarousel {
     this.track.setAttribute("role", "region");
     this.track.setAttribute("aria-label", "Carrossel de imagens com navegação por teclado");
     this.track.scrollLeft = 0;
+
+    // 🎯 Inicia autoplay se habilitado via data-atributo
+    this.autoplayDelay = parseInt(this.container.dataset.autoplay || "0", 10);
+    this.loop = this.container.dataset.loop === "true";
+    this.autoplayAtivo = false;
+
+    if (this.autoplayDelay > 0) {
+      this.#iniciarAutoplay();
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 🎮 Vincula eventos de clique, teclado e rolagem para navegação fluida
+  // 🎮 Eventos de clique, teclado, rolagem e pausa por acessibilidade
   // ════════════════════════════════════════════════════════════════════════
   #vincularEventos() {
     this.track.addEventListener("scroll", () => {
@@ -52,11 +66,15 @@ class CaracolCarousel {
     this.track.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") this.#rolar(-1);
       if (e.key === "ArrowRight") this.#rolar(1);
+      this.#pausarAutoplayTemporariamente();
     });
+
+    this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
+    this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 📐 Lógica de rolagem proporcional à largura visível da faixa
+  // 📐 Rola o carrossel com passo proporcional
   // ════════════════════════════════════════════════════════════════════════
   #rolar(direcao) {
     const passo = this.track.clientWidth * 0.9;
@@ -89,9 +107,19 @@ class CaracolCarousel {
     const descricao = imagemAtual?.alt || "imagem sem descrição";
     this.status.textContent = `Imagem ${atual + 1} de ${this.pictures.length}: ${descricao}`;
 
+    // 🎯 Desativa botões se aplicável
     const maxScroll = this.track.scrollWidth - this.track.clientWidth;
     this.setaEsquerda.disabled = this.track.scrollLeft <= 10;
     this.setaDireita.disabled = this.track.scrollLeft >= maxScroll - 10;
+
+    // 📢 Dispara evento externo para integração
+    this.container.dispatchEvent(new CustomEvent("carrosselAtualizado", {
+      detail: {
+        index: atual,
+        alt: descricao,
+        total: this.pictures.length
+      }
+    }));
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -104,6 +132,32 @@ class CaracolCarousel {
     div.setAttribute("aria-live", "polite");
     this.container.appendChild(div);
     return div;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 🔁 Autoplay com pausa automática
+  // ════════════════════════════════════════════════════════════════════════
+  #iniciarAutoplay() {
+    this.autoplayAtivo = true;
+    const executar = () => {
+      if (!this.autoplayAtivo) return;
+      this.#rolar(1);
+
+      this._autoplayTimer = setTimeout(() => {
+        if (this.loop || this.setaDireita?.disabled === false) {
+          executar();
+        }
+      }, this.autoplayDelay);
+    };
+    executar();
+  }
+
+  #pausarAutoplayTemporariamente() {
+    this.autoplayAtivo = false;
+    if (this._autoplayTimer) {
+      clearTimeout(this._autoplayTimer);
+      this._autoplayTimer = null;
+    }
   }
 }
 
