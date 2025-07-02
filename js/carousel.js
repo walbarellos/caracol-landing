@@ -71,17 +71,22 @@ class CaracolCarousel {
       if (novoIndex >= this.pictures.length) novoIndex = 0;
     }
 
-    const alvo = this.pictures[novoIndex];
-if (alvo) {
-  const offset = alvo.offsetLeft - this.track.offsetWidth / 2 + alvo.offsetWidth / 2;
+	const alvo = this.pictures[novoIndex];
+	if (alvo) {
+  		const alvoRect = alvo.getBoundingClientRect();
+  		const trackRect = this.track.getBoundingClientRect();
 
-  this.track.scrollTo({
-    left: offset,
-    behavior: "smooth"
-  });
+	  	const deslocamentoAtual = this.track.scrollLeft;
+	  	const delta = alvoRect.left - trackRect.left - (this.track.offsetWidth / 2 - alvo.offsetWidth / 2);
+	  	const destino = deslocamentoAtual + delta;
+		
+		this.track.scrollTo({
+		  left: destino,
+	      behavior: "smooth"
+	    });
 
-  // Aguarda a animação para atualizar o estado
-  setTimeout(() => this.#atualizarEstado(), 400); // você pode ajustar o tempo conforme a suavidade desejada
+  		setTimeout(() => this.#atualizarEstado(), 400);
+		}
 }
 
 
