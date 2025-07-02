@@ -67,12 +67,23 @@ class CaracolCarousel {
   }
 
   #rolar(direcao) {
-    const passo = this.track.clientWidth * 0.9;
-    this.track.scrollBy({
-      left: direcao * passo,
-      behavior: "smooth"
-    });
+  const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
+  let novoIndex = atualIndex + direcao;
+
+  // Respeita limites com ou sem loop
+  if (!this.loop) {
+    if (novoIndex < 0 || novoIndex >= this.pictures.length) return;
+  } else {
+    if (novoIndex < 0) novoIndex = this.pictures.length - 1;
+    if (novoIndex >= this.pictures.length) novoIndex = 0;
   }
+
+  const alvo = this.pictures[novoIndex];
+  if (alvo) {
+    alvo.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }
+}
+
 
   #atualizarEstado() {
     const visiveis = this.pictures.map((pic, i) => {
