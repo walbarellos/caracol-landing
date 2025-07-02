@@ -1,165 +1,99 @@
-// ════════════════════════════════════════════════════════════════════════
-// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.0
-// Sabedoria no controle, força na rolagem, beleza na experiência visual
-// Nota realista: 12/10 — Engenharia internacional com acessibilidade real
-// ════════════════════════════════════════════════════════════════════════
-
 "use strict";
 
 class CaracolCarousel {
   constructor(container) {
-    if (!(container instanceof HTMLElement)) {
-      console.error("❌ Elemento inválido passado ao construtor do carrossel.");
-      return;
-    }
+    if (!(container instanceof HTMLElement)) return;
 
-    // 🔐 Evita reexecução
-    if (container.dataset.iniciado === "true") return;
+    if (container.dataset.loaded === "true") return;
+    container.dataset.loaded = "true";
 
     this.container = container;
     this.track = container.querySelector(".carrossel-itens");
-    this.pictures = Array.from(this.track?.querySelectorAll("picture") || []);
-    this.setaEsquerda = container.querySelector(".carrossel-seta.esquerda");
-    this.setaDireita = container.querySelector(".carrossel-seta.direita");
-    this.status = this.#criarStatusAcessibilidade();
+    this.pictures = Array.from(this.track.querySelectorAll("picture"));
+    this.prevBtn = container.querySelector(".carrossel-seta.esquerda");
+    this.nextBtn = container.querySelector(".carrossel-seta.direita");
+    this.autoplay = parseInt(container.dataset.autoplay, 10) || 0;
+    this.loop = container.dataset.loop === "true";
+    this.current = 0;
+    this._timer = null;
 
-    this.raf = null;
-    this.#configurarTrack();
-    this.#vincularEventos();
-    this.#atualizarEstado();
-
-    // 🧠 Marca como iniciado
-    container.dataset.iniciado = "true";
+    this.#setup();
+    this.#bindEvents();
+    this.#update();
+    if (this.autoplay > 0) this.#startAutoplay();
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔧 Configuração inicial do carrossel e seu comportamento de rolagem
-  // ════════════════════════════════════════════════════════════════════════
-  #configurarTrack() {
+  #setup() {
     this.track.setAttribute("tabindex", "0");
-    this.track.setAttribute("role", "region");
-    this.track.setAttribute("aria-label", "Carrossel de imagens com navegação por teclado");
-    this.track.scrollLeft = 0;
-
-    // 🎯 Inicia autoplay se habilitado via data-atributo
-    this.autoplayDelay = parseInt(this.container.dataset.autoplay || "0", 10);
-    this.loop = this.container.dataset.loop === "true";
-    this.autoplayAtivo = false;
-
-    if (this.autoplayDelay > 0) {
-      this.#iniciarAutoplay();
-    }
+    this.track.setAttribute("role", "list");
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🎮 Eventos de clique, teclado, rolagem e pausa por acessibilidade
-  // ════════════════════════════════════════════════════════════════════════
-  #vincularEventos() {
-    this.track.addEventListener("scroll", () => {
-      cancelAnimationFrame(this.raf);
-      this.raf = requestAnimationFrame(() => this.#atualizarEstado());
-    });
-
-    this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
-    this.setaDireita?.addEventListener("click", () => this.#rolar(1));
+  #bindEvents() {
+    this.prevBtn.addEventListener("click", () => { this.#go(-1); });
+    this.nextBtn.addEventListener("click", () => { this.#go(1); });
 
     this.track.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") this.#rolar(-1);
-      if (e.key === "ArrowRight") this.#rolar(1);
-      this.#pausarAutoplayTemporariamente();
+      if (e.key === "ArrowLeft") this.#go(-1);
+      if (e.key === "ArrowRight") this.#go(1);
     });
 
-    this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
-    this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
-  // 📐 Rola o carrossel com passo proporcional
-  // ════════════════════════════════════════════════════════════════════════
-  #rolar(direcao) {
-    const passo = this.track.clientWidth * 0.9;
-    this.track.scrollBy({
-      left: direcao * passo,
-      behavior: "smooth"
+    this.container.addEventListener("click", () => {
+      this.track.focus();
     });
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔍 Atualiza visualmente o carrossel e o status de acessibilidade
-  // ════════════════════════════════════════════════════════════════════════
-  #atualizarEstado() {
-    const visiveis = this.pictures.map((pic, i) => {
-      const img = pic.querySelector("img");
-      if (!img) return { i, visivel: 0 };
-      const rect = img.getBoundingClientRect();
-      const larguraVisivel = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
-      return { i, visivel: larguraVisivel };
-    });
+  #go(delta) {
+    this.#stopAutoplay();
 
-    const maisVisivel = visiveis.reduce((a, b) => (a.visivel > b.visivel ? a : b), { i: 0, visivel: 0 });
-    const atual = maisVisivel.i;
-
-    this.pictures.forEach((pic, i) => {
-      pic.classList.toggle("ativo", i === atual);
-    });
-
-    const imagemAtual = this.pictures[atual]?.querySelector("img");
-    const descricao = imagemAtual?.alt || "imagem sem descrição";
-    this.status.textContent = `Imagem ${atual + 1} de ${this.pictures.length}: ${descricao}`;
-
-    // 🎯 Desativa botões se aplicável
-    const maxScroll = this.track.scrollWidth - this.track.clientWidth;
-    this.setaEsquerda.disabled = this.track.scrollLeft <= 10;
-    this.setaDireita.disabled = this.track.scrollLeft >= maxScroll - 10;
-
-    // 📢 Dispara evento externo para integração
-    this.container.dispatchEvent(new CustomEvent("carrosselAtualizado", {
-      detail: {
-        index: atual,
-        alt: descricao,
-        total: this.pictures.length
-      }
-    }));
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔊 Elemento invisível para leitores de tela com status dinâmico
-  // ════════════════════════════════════════════════════════════════════════
-  #criarStatusAcessibilidade() {
-    const div = document.createElement("div");
-    div.className = "sr-only";
-    div.setAttribute("role", "status");
-    div.setAttribute("aria-live", "polite");
-    this.container.appendChild(div);
-    return div;
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔁 Autoplay com pausa automática
-  // ════════════════════════════════════════════════════════════════════════
-  #iniciarAutoplay() {
-    this.autoplayAtivo = true;
-    const executar = () => {
-      if (!this.autoplayAtivo) return;
-      this.#rolar(1);
-
-      this._autoplayTimer = setTimeout(() => {
-        if (this.loop || this.setaDireita?.disabled === false) {
-          executar();
-        }
-      }, this.autoplayDelay);
-    };
-    executar();
-  }
-
-  #pausarAutoplayTemporariamente() {
-    this.autoplayAtivo = false;
-    if (this._autoplayTimer) {
-      clearTimeout(this._autoplayTimer);
-      this._autoplayTimer = null;
+    let idx = this.current + delta;
+    if (this.loop) {
+      if (idx < 0) idx = this.pictures.length - 1;
+      if (idx >= this.pictures.length) idx = 0;
+    } else {
+      idx = Math.max(0, Math.min(idx, this.pictures.length - 1));
     }
+
+    this.current = idx;
+    this.#scrollTo(idx);
+    this.#update();
+  }
+
+  #scrollTo(idx) {
+  const pic = this.pictures[idx];
+
+  const trackRect = this.track.getBoundingClientRect();
+  const picRect = pic.getBoundingClientRect();
+
+  const currentScroll = this.track.scrollLeft;
+  const offset = pic.offsetLeft - this.track.offsetLeft;
+
+  const centerOffset = offset - (this.track.clientWidth / 2) + (pic.clientWidth / 2);
+
+  this.track.scrollTo({
+    left: centerOffset,
+    behavior: "smooth"
+  });
+}
+
+  #update() {
+    this.pictures.forEach((p, i) => p.classList.toggle("ativo", i === this.current));
+    this.prevBtn.disabled = !this.loop && this.current === 0;
+    this.nextBtn.disabled = !this.loop && this.current === this.pictures.length - 1;
+  }
+
+  #startAutoplay() {
+    this._timer = setInterval(() => this.#go(1), this.autoplay * 1000);
+  }
+
+  #stopAutoplay() {
+    clearInterval(this._timer);
   }
 }
 
-// 🌐 Registro global seguro para múltiplas instâncias futuras
 window.CaracolCarousel = CaracolCarousel;
+
+// Inicialização após DOM pronto
+document.addEventListener("DOMContentLoaded", () => {
+  const c = document.querySelector(".carrossel-container");
+  if (c) new CaracolCarousel(c);
+});
