@@ -70,20 +70,23 @@ class CaracolCarousel {
   const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
   let novoIndex = atualIndex + direcao;
 
-  // Respeita limites com ou sem loop
   if (!this.loop) {
     if (novoIndex < 0 || novoIndex >= this.pictures.length) return;
   } else {
+    // looping com segurança
     if (novoIndex < 0) novoIndex = this.pictures.length - 1;
     if (novoIndex >= this.pictures.length) novoIndex = 0;
   }
 
   const alvo = this.pictures[novoIndex];
   if (alvo) {
+    // Força a atualização de visibilidade após scroll
     alvo.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+
+    // Aguarda a transição do scroll e força atualização do estado
+    setTimeout(() => this.#atualizarEstado(), 300); // pode ajustar tempo conforme o 'smooth scroll'
   }
 }
-
 
   #atualizarEstado() {
     const visiveis = this.pictures.map((pic, i) => {
