@@ -1,158 +1,152 @@
-/* ════════════════════════════════════════════════════════════════════════
-🎠 carrossel.css — Galeria Método Caracol v13.0
-Design mobile-first, noturno adaptável, acessível e refinado (Sabedoria, Força e Beleza)
-Autor: Graciliano Tolentino — Sul-Americano de Excelência
-Nota internacional: 12/10
-═════════════════════════════════════════════════════════════════════════ */
+// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.1 (corrigido)
+"use strict";
 
-/* 📦 Container externo do carrossel */
-.carrossel-container {
-  position: relative;
-  margin: 3rem auto;
-  padding: 2rem;
-  max-width: 1280px;
-  background: #0e0e0e;
-  border-top: 2px solid #5f27cd;
-  border-bottom: 2px solid #10ac84;
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-  overflow: hidden;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
+class CaracolCarousel {
+  constructor(container) {
+    if (!(container instanceof HTMLElement)) {
+      console.error("❌ Elemento inválido passado ao construtor do carrossel.");
+      return;
+    }
 
-/* 🎢 Faixa horizontal com rolagem inteligente */
-.carrossel-itens {
-  display: flex;
-  gap: 1.5rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding-block: 1rem;
-  padding-inline: 0.5rem;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.carrossel-itens::-webkit-scrollbar {
-  display: none;
-}
+    if (container.dataset.loaded === "true") return;
 
-/* 📸 Bloco visual de cada imagem */
-.carrossel-itens picture {
-  flex-shrink: 0;
-  scroll-snap-align: center;
-  border-radius: 1rem;
-  background: linear-gradient(145deg, #1e1e1e, #121212);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
-  transition: transform 0.4s ease, opacity 0.4s ease;
-  opacity: 0;
-  transform: translateY(2rem);
-}
+    this.container = container;
+    this.track = container.querySelector(".carrossel-itens");
+    this.pictures = Array.from(this.track?.querySelectorAll("picture") || []);
+    this.setaEsquerda = container.querySelector(".carrossel-seta.esquerda");
+    this.setaDireita = container.querySelector(".carrossel-seta.direita");
+    this.status = this.#criarStatusAcessibilidade();
+    this.raf = null;
 
-/* 🟢 Estado ativado para animação visível */
-.carrossel-itens picture.ativo {
-  opacity: 1;
-  transform: translateY(0);
-}
+    this.#configurarTrack();
+    this.#vincularEventos();
+    this.#atualizarEstado();
 
-/* 🌌 Imagem dentro do bloco */
-.carrossel-itens img {
-  display: block;
-  max-width: 100%;
-  width: auto;
-  height: auto;
-  max-height: 320px;
-  object-fit: contain;
-  border-radius: inherit;
-  border: 2px solid #222;
-  background-color: #000;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* 💫 Interação com imagem */
-.carrossel-itens img:hover,
-.carrossel-itens img:focus-visible {
-  transform: scale(1.05);
-  border-color: #ff6b6b; /* coral quente */
-  box-shadow: 0 0 12px #ff6b6b88;
-}
-
-/* ◀️▶️ Botões de navegação lateral */
-.carrossel-seta {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(15, 15, 15, 0.85);
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1rem;
-  border-radius: 50%;
-  font-size: 1.25rem;
-  cursor: pointer;
-  z-index: 10;
-  opacity: 0.85;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-.carrossel-seta:hover {
-  background-color: #ff6b6b;
-  transform: translateY(-50%) scale(1.1);
-  opacity: 1;
-}
-.carrossel-seta:disabled {
-  opacity: 0.3;
-  pointer-events: none;
-}
-.carrossel-seta:focus-visible {
-  outline: 2px solid #48dbfb; /* azul neon */
-  outline-offset: 4px;
-}
-.carrossel-seta.esquerda { left: 1rem; }
-.carrossel-seta.direita  { right: 1rem; }
-
-/* ♿ Oculto para leitores de tela */
-.sr-only {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* 📱 Mobile-first responsivo */
-@media (max-width: 768px) {
-  .carrossel-itens img {
-    max-height: 200px;
+    container.dataset.loaded = "true";
   }
-  .carrossel-seta {
-    font-size: 1rem;
-    padding: 0.5rem 0.75rem;
-  }
-}
 
-/* 🌗 Modo claro emocionalmente conversivo */
-@media (prefers-color-scheme: light) {
-  .carrossel-container {
-    background-color: #ffffff;
-    border-top-color: #9370db;  /* lavanda viva */
-    border-bottom-color: #ff6b6b;  /* coral */
+  #configurarTrack() {
+    this.track.setAttribute("tabindex", "0");
+    this.track.setAttribute("role", "region");
+    this.track.setAttribute("aria-label", "Carrossel de imagens com navegação por teclado");
+    this.track.scrollLeft = 0;
+
+    this.autoplayDelay = parseInt(this.container.dataset.autoplay || "0", 10);
+    this.loop = this.container.dataset.loop === "true";
+    this.autoplayAtivo = false;
+
+    if (this.autoplayDelay > 0) {
+      this.#iniciarAutoplay();
+    }
   }
-  .carrossel-itens picture {
-    background: linear-gradient(145deg, #f1f1f1, #ffffff);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  #vincularEventos() {
+    this.track.addEventListener("scroll", () => {
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => this.#atualizarEstado());
+    });
+
+    this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
+    this.setaDireita?.addEventListener("click", () => this.#rolar(1));
+
+    this.track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") this.#rolar(-1);
+      if (e.key === "ArrowRight") this.#rolar(1);
+      this.#pausarAutoplayTemporariamente();
+    });
+
+    this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
+    this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
   }
-  .carrossel-itens img {
-    background-color: #fff;
-    border-color: #ccc;
+
+  #rolar(direcao) {
+    const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
+    let novoIndex = atualIndex + direcao;
+
+    if (!this.loop) {
+      if (novoIndex < 0 || novoIndex >= this.pictures.length) return;
+    } else {
+      if (novoIndex < 0) novoIndex = this.pictures.length - 1;
+      if (novoIndex >= this.pictures.length) novoIndex = 0;
+    }
+
+    const alvo = this.pictures[novoIndex];
+    if (alvo) {
+      alvo.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      setTimeout(() => this.#atualizarEstado(), 300);
+    }
   }
-  .carrossel-seta {
-    background-color: #eeeeee;
-    color: #222;
+
+  #atualizarEstado() {
+    const visiveis = this.pictures.map((pic, i) => {
+      const img = pic.querySelector("img");
+      if (!img) return { i, visivel: 0 };
+      const rect = img.getBoundingClientRect();
+      const larguraVisivel = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
+      return { i, visivel: larguraVisivel };
+    });
+
+    const maisVisivel = visiveis.reduce((a, b) => (a.visivel > b.visivel ? a : b), { i: 0, visivel: 0 });
+    const atual = maisVisivel.i;
+
+    this.pictures.forEach((pic, i) => {
+      pic.classList.toggle("ativo", i === atual);
+    });
+
+    const imagemAtual = this.pictures[atual]?.querySelector("img");
+    const descricao = imagemAtual?.alt || "imagem sem descrição";
+    this.status.textContent = `Imagem ${atual + 1} de ${this.pictures.length}: ${descricao}`;
+
+    const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+    this.setaEsquerda.disabled = this.track.scrollLeft <= 10;
+    this.setaDireita.disabled = this.track.scrollLeft >= maxScroll - 10;
+
+    this.container.dispatchEvent(new CustomEvent("carrosselAtualizado", {
+      detail: {
+        index: atual,
+        alt: descricao,
+        total: this.pictures.length
+      }
+    }));
   }
-  .carrossel-seta:hover {
-    background-color: #ff6b6b;
-    color: white;
+
+  #criarStatusAcessibilidade() {
+    const div = document.createElement("div");
+    div.className = "sr-only";
+    div.setAttribute("role", "status");
+    div.setAttribute("aria-live", "polite");
+    this.container.appendChild(div);
+    return div;
+  }
+
+  #iniciarAutoplay() {
+    this.autoplayAtivo = true;
+
+    const executar = () => {
+      if (!this.autoplayAtivo) return;
+
+      const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
+      const noFim = atualIndex === this.pictures.length - 1;
+
+      if (!this.loop && noFim) {
+        this.#pausarAutoplayTemporariamente();
+        return;
+      }
+
+      this.#rolar(1);
+      this._autoplayTimer = setTimeout(() => executar(), this.autoplayDelay);
+    };
+
+    this._autoplayTimer = setTimeout(() => executar(), this.autoplayDelay);
+  }
+
+  #pausarAutoplayTemporariamente() {
+    this.autoplayAtivo = false;
+    if (this._autoplayTimer) {
+      clearTimeout(this._autoplayTimer);
+      this._autoplayTimer = null;
+    }
   }
 }
+
+window.CaracolCarousel = CaracolCarousel;
