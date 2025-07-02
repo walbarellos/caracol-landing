@@ -1,8 +1,4 @@
-// ════════════════════════════════════════════════════════════════════════
-// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.0
-// Sabedoria no controle, força na rolagem, beleza na experiência visual
-// Nota realista: 12/10 — Engenharia internacional com acessibilidade real
-// ════════════════════════════════════════════════════════════════════════
+// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.1 (corrigido)
 
 "use strict";
 
@@ -13,7 +9,6 @@ class CaracolCarousel {
       return;
     }
 
-    // 🔐 Evita reexecução
     if (container.dataset.loaded === "true") return;
 
     this.container = container;
@@ -22,13 +17,12 @@ class CaracolCarousel {
     this.setaEsquerda = container.querySelector(".carrossel-seta.esquerda");
     this.setaDireita = container.querySelector(".carrossel-seta.direita");
     this.status = this.#criarStatusAcessibilidade();
-
     this.raf = null;
+
     this.#configurarTrack();
     this.#vincularEventos();
     this.#atualizarEstado();
 
-    // 🧠 Marca como iniciado
     container.dataset.loaded = "true";
   }
 
@@ -67,26 +61,29 @@ class CaracolCarousel {
   }
 
   #rolar(direcao) {
-  const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
-  let novoIndex = atualIndex + direcao;
+    const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
+    let novoIndex = atualIndex + direcao;
 
-  if (!this.loop) {
-    if (novoIndex < 0 || novoIndex >= this.pictures.length) return;
-  } else {
-    // looping com segurança
-    if (novoIndex < 0) novoIndex = this.pictures.length - 1;
-    if (novoIndex >= this.pictures.length) novoIndex = 0;
-  }
+    if (!this.loop) {
+      if (novoIndex < 0 || novoIndex >= this.pictures.length) return;
+    } else {
+      if (novoIndex < 0) novoIndex = this.pictures.length - 1;
+      if (novoIndex >= this.pictures.length) novoIndex = 0;
+    }
 
-  const alvo = this.pictures[novoIndex];
-  if (alvo) {
-    // Força a atualização de visibilidade após scroll
-    alvo.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    const alvo = this.pictures[novoIndex];
+if (alvo) {
+  const offset = alvo.offsetLeft - this.track.offsetWidth / 2 + alvo.offsetWidth / 2;
 
-    // Aguarda a transição do scroll e força atualização do estado
-    setTimeout(() => this.#atualizarEstado(), 300); // pode ajustar tempo conforme o 'smooth scroll'
-  }
+  this.track.scrollTo({
+    left: offset,
+    behavior: "smooth"
+  });
+
+  // Aguarda a animação para atualizar o estado
+  setTimeout(() => this.#atualizarEstado(), 400); // você pode ajustar o tempo conforme a suavidade desejada
 }
+
 
   #atualizarEstado() {
     const visiveis = this.pictures.map((pic, i) => {
@@ -130,31 +127,26 @@ class CaracolCarousel {
     return div;
   }
 
-#iniciarAutoplay() {
-  this.autoplayAtivo = true;
+  #iniciarAutoplay() {
+    this.autoplayAtivo = true;
 
-  const executar = () => {
-    if (!this.autoplayAtivo) return;
+    const executar = () => {
+      if (!this.autoplayAtivo) return;
 
-    const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
-    const noFim = atualIndex === this.pictures.length - 1;
+      const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
+      const noFim = atualIndex === this.pictures.length - 1;
 
-    if (!this.loop && noFim) {
-      this.#pausarAutoplayTemporariamente(); // Pausa no fim se não for loop
-      return;
-    }
+      if (!this.loop && noFim) {
+        this.#pausarAutoplayTemporariamente();
+        return;
+      }
 
-    this.#rolar(1); // Avança
+      this.#rolar(1);
+      this._autoplayTimer = setTimeout(() => executar(), this.autoplayDelay);
+    };
 
-    this._autoplayTimer = setTimeout(() => {
-      executar(); // Próxima rolagem
-    }, this.autoplayDelay);
-  };
-
-  this._autoplayTimer = setTimeout(() => {
-    executar();
-  }, this.autoplayDelay);
-}
+    this._autoplayTimer = setTimeout(() => executar(), this.autoplayDelay);
+  }
 
   #pausarAutoplayTemporariamente() {
     this.autoplayAtivo = false;
