@@ -39,31 +39,36 @@
 
 <body>
 
-  <!-- 🌟 Cabeçalho semântico (conteúdo dinâmico via fetch) -->
-  <header id="header-container">
-    <!-- Inserido dinamicamente -->
-  </header>
+  <!-- 🌟 Cabeçalho (injetado dinamicamente) -->
+  <header id="header-container"></header>
 
-  <!-- 🐚 Carrossel com suporte a autoplay e loop -->
-  <section class="carrossel-container" data-autoplay="6000" data-loop="true">
-    <button class="carrossel-seta esquerda" aria-label="Imagem anterior">◀</button>
+  <!-- 🎠 Carrossel local e funcional -->
+  <section class="carrossel-container" role="region" aria-label="Carrossel de imagens do Método Caracol" data-autoplay="6000" data-loop="true">
+    <button class="carrossel-seta esquerda" aria-label="Imagem anterior" tabindex="0">◀</button>
 
-    <div id="carrossel" class="carrossel-itens" tabindex="0" aria-label="Lista de imagens em rolagem horizontal">
-      <!-- Imagens inseridas dinamicamente ou diretamente -->
+    <div class="carrossel-itens" tabindex="0" aria-label="Lista de imagens em rolagem horizontal">
+      <picture>
+        <source srcset="assets/carrossel/caracol01.webp" type="image/webp" />
+        <img src="assets/carrossel/caracol01.jpg" alt="Ilustração espiral com fundo roxo escuro e brilho central" loading="lazy" width="480" height="320" />
+      </picture>
+      <picture>
+        <source srcset="assets/carrossel/caracol02.webp" type="image/webp" />
+        <img src="assets/carrossel/caracol02.jpg" alt="Símbolo do caracol estilizado sobre matriz hexagonal" loading="lazy" width="480" height="320" />
+      </picture>
+      <picture>
+        <source srcset="assets/carrossel/caracol03.webp" type="image/webp" />
+        <img src="assets/carrossel/caracol03.jpg" alt="Morfologia caracólica em fundo nebuloso com partículas" loading="lazy" width="480" height="320" />
+      </picture>
     </div>
 
-    <button class="carrossel-seta direita" aria-label="Próxima imagem">▶</button>
+    <button class="carrossel-seta direita" aria-label="Próxima imagem" tabindex="0">▶</button>
   </section>
 
-  <!-- 🧾 Formulário -->
-  <main id="form-container">
-    <!-- Inserido dinamicamente -->
-  </main>
+  <!-- 🧾 Formulário (injetado dinamicamente) -->
+  <main id="form-container"></main>
 
-  <!-- 🧠 Rodapé com informações institucionais -->
-  <footer id="footer-container">
-    <!-- Inserido dinamicamente -->
-  </footer>
+  <!-- 🧠 Rodapé (injetado dinamicamente) -->
+  <footer id="footer-container"></footer>
 
   <!-- ⚠️ Fallback para navegadores sem JS -->
   <noscript>
@@ -73,18 +78,23 @@
     </div>
   </noscript>
 
-  <!-- 🧠 Scripts finais com ordem estratégica -->
-  <script src="js/main.js" defer></script>
+  <!-- 🧠 Scripts finais -->
   <script src="js/carousel.js" defer></script>
+  <script src="js/main.js" defer></script>
 
+  <!-- 🧠 Instanciador de carrossel manual (caso não carregado via fetch) -->
   <script>
-    // 🌀 Inicializa o carrossel após carregamento completo
     document.addEventListener("DOMContentLoaded", () => {
       const container = document.querySelector(".carrossel-container");
-      if (container && window.Carousel) {
-        new Carousel(container);
+      if (container && window.Carousel && !container.dataset.loaded) {
+        try {
+          new Carousel(container);
+        } catch (erro) {
+          console.error("❌ Erro ao instanciar carrossel manual:", erro);
+        }
       }
     });
   </script>
 </body>
 </html>
+
