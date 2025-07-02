@@ -1,24 +1,25 @@
-/* ══════════════════════════════════════════════════════════════════════
-🎠 carousel.css — Método Caracol v5.0
-Scroll refinado com acessibilidade real, impacto visual e modularidade
-Criado com sabedoria, força e beleza — Nível técnico: excelência global
-═══════════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════════════
+🎠 carousel.css — Galeria Modular Método Caracol v8.0
+Engenharia visual refinada: acessível, responsiva e hipnótica
+Autor: Graciliano Tolentino, O Grande Engenheiro da América do Sul
+Classificação Técnica: 12/10 — Padrão Internacional de Excelência
+═════════════════════════════════════════════════════════════════════════ */
 
-/* 🎠 Container Externo com tema adaptativo */
+/* 🎯 Container Externo */
 .carrossel-container {
   position: relative;
   margin: 2rem auto;
-  padding: 2rem 1rem;
+  padding: clamp(1rem, 4vw, 2rem);
   max-width: 1280px;
   background: #0d0d0d;
-  border-top: 2px solid #5f27cd;
-  border-bottom: 2px solid #5f27cd;
+  border-block: 2px solid #5f27cd;
   border-radius: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  isolation: isolate;
 }
 
-/* 📸 Faixa Horizontal Scrollável com Snap Suave */
+/* 🧭 Faixa Scrollável Horizontal com Snap */
 .carrossel-itens {
   display: flex;
   gap: 1.5rem;
@@ -28,26 +29,30 @@ Criado com sabedoria, força e beleza — Nível técnico: excelência global
   -webkit-overflow-scrolling: touch;
   padding-block: 1rem;
   padding-inline: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: #555 transparent;
 }
 
-/* 🖼️ Estilo para cada imagem e estrutura interna */
+/* 🖼️ Estrutura de cada bloco de imagem */
 .carrossel-itens picture {
   flex-shrink: 0;
   scroll-snap-align: start;
-  border-radius: 16px;
+  border-radius: 1rem;
   background-color: #1a1a1a;
   overflow: hidden;
-  transition: transform 0.3s ease, opacity 0.5s ease;
   opacity: 0;
   transform: translateY(2rem);
-  will-change: transform, opacity;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  will-change: opacity, transform;
 }
 
-.carrossel-itens picture.visivel {
+/* 🟢 Ativação visual progressiva */
+.carrossel-itens picture.ativo {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* 📸 Imagens internas */
 .carrossel-itens img {
   display: block;
   max-width: 100%;
@@ -57,24 +62,27 @@ Criado com sabedoria, força e beleza — Nível técnico: excelência global
   aspect-ratio: 16 / 9;
   border-radius: inherit;
   object-fit: contain;
-  border: 2px solid #333;
-  background: #0f0f0f;
+  border: 2px solid #222;
+  background-color: #0f0f0f;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Hover + foco refinado */
-.carrossel-itens img:hover {
-  transform: scale(1.04);
+/* ✨ Interação por hover ou foco */
+.carrossel-itens img:hover,
+.carrossel-itens img:focus-visible {
+  transform: scale(1.05);
   border-color: #10ac84;
-  box-shadow: 0 0 8px #10ac8477;
+  box-shadow: 0 0 12px #10ac8477;
+  outline: none;
 }
 
-/* Destaque para imagem ativa via .ativo */
+/* 🌟 Destaque visual para imagem ativa */
 picture.ativo img {
   border-color: #10ac84;
-  box-shadow: 0 0 0 3px #10ac8499;
+  box-shadow: 0 0 0 4px #10ac8499;
 }
 
-/* 🎯 Botões laterais com feedback visual */
+/* ◀▶ Botões de navegação laterais */
 .carrossel-seta {
   position: absolute;
   top: 50%;
@@ -88,8 +96,8 @@ picture.ativo img {
   line-height: 1;
   cursor: pointer;
   z-index: 10;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  opacity: 0.8;
+  opacity: 0.85;
+  transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.2s ease;
 }
 
 .carrossel-seta:hover {
@@ -108,28 +116,22 @@ picture.ativo img {
   outline-offset: 4px;
 }
 
-.carrossel-seta.esquerda {
-  left: -1.25rem;
-}
+.carrossel-seta.esquerda { left: -1.5rem; }
+.carrossel-seta.direita  { right: -1.5rem; }
 
-.carrossel-seta.direita {
-  right: -1.25rem;
-}
-
-/* 🌗 Suporte automático ao modo claro */
+/* 🌗 Suporte automático a modo claro */
 @media (prefers-color-scheme: light) {
   .carrossel-container {
-    background: #f9f9f9;
-    border-top-color: #b5aaff;
-    border-bottom-color: #b5aaff;
+    background-color: #fafafa;
+    border-color: #b5aaff;
   }
 
   .carrossel-itens picture {
-    background-color: #f0f0f0;
+    background-color: #efefef;
   }
 
   .carrossel-itens img {
-    background-color: #ffffff;
+    background-color: #fff;
     border-color: #ccc;
   }
 
@@ -147,7 +149,7 @@ picture.ativo img {
   }
 }
 
-/* 📱 Estilo adaptado para telas menores */
+/* 📱 Adaptação total para telas pequenas */
 @media (max-width: 768px) {
   .carrossel-container {
     padding: 1rem;
@@ -163,38 +165,31 @@ picture.ativo img {
   }
 
   .carrossel-seta {
-    padding: 0.5rem 0.75rem;
     font-size: 1rem;
-    line-height: 1;
+    padding: 0.5rem 0.75rem;
   }
 
-  .carrossel-seta.esquerda {
-    left: 0.25rem;
-  }
-
-  .carrossel-seta.direita {
-    right: 0.25rem;
-  }
+  .carrossel-seta.esquerda { left: 0.25rem; }
+  .carrossel-seta.direita  { right: 0.25rem; }
 }
 
-/* 🖥️ Estilo expandido para telas ultrawide (4K+) */
+/* 🖥️ Estilo extra para telas 4K e ultrawide */
 @media (min-width: 1440px) {
   .carrossel-container {
     max-width: 1440px;
   }
 }
 
-/* 🧠 Barra de rolagem personalizada (webkit only) */
+/* 🎛️ Personalização da barra de rolagem */
 .carrossel-itens::-webkit-scrollbar {
   height: 8px;
 }
-
 .carrossel-itens::-webkit-scrollbar-thumb {
   background-color: #444;
   border-radius: 4px;
 }
 
-/* ♿ Elemento oculto visivelmente, mas acessível a leitores de tela */
+/* ♿ Elemento apenas para leitores de tela */
 .sr-only {
   position: absolute !important;
   width: 1px;
