@@ -1,5 +1,4 @@
-// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.1 (corrigido)
-
+// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.2
 "use strict";
 
 class CaracolCarousel {
@@ -41,31 +40,41 @@ class CaracolCarousel {
     }
   }
 
-#vincularEventos() {
-  this.track.addEventListener("scroll", () => {
-    cancelAnimationFrame(this.raf);
-    this.raf = requestAnimationFrame(() => this.#atualizarEstado());
-  });
+  #vincularEventos() {
+    this.track.addEventListener("scroll", () => {
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => this.#atualizarEstado());
+    });
 
-  this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
-  this.setaDireita?.addEventListener("click", () => this.#rolar(1));
+    this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
+    this.setaDireita?.addEventListener("click", () => this.#rolar(1));
 
-  // ✅ Ativa teclado somente quando o carrossel estiver em foco
-  this.track.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") this.#rolar(-1);
-    if (e.key === "ArrowRight") this.#rolar(1);
-    this.#pausarAutoplayTemporariamente();
-  });
+    // ✅ Escuta global, mas só age se o carrossel estiver com foco
+    this._keydownGlobal = (e) => {
+      if (document.activeElement === this.track) {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          this.#rolar(-1);
+          this.#pausarAutoplayTemporariamente();
+        }
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          this.#rolar(1);
+          this.#pausarAutoplayTemporariamente();
+        }
+      }
+    };
+    document.addEventListener("keydown", this._keydownGlobal);
 
-  // ✅ Garante que clique dê foco ao carrossel
-  this.track.addEventListener("click", () => {
-    this.track.focus();
-  });
+    // ✅ Foco no clique para ativar controle por teclado
+    this.track.addEventListener("click", () => {
+      this.track.focus();
+    });
 
-  this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
-  this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
-}
-	
+    this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
+    this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
+  }
+
   #rolar(direcao) {
     const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
     let novoIndex = atualIndex + direcao;
@@ -77,24 +86,23 @@ class CaracolCarousel {
       if (novoIndex >= this.pictures.length) novoIndex = 0;
     }
 
-	const alvo = this.pictures[novoIndex];
-	if (alvo) {
-  		const alvoRect = alvo.getBoundingClientRect();
-  		const trackRect = this.track.getBoundingClientRect();
+    const alvo = this.pictures[novoIndex];
+    if (alvo) {
+      const alvoRect = alvo.getBoundingClientRect();
+      const trackRect = this.track.getBoundingClientRect();
 
-	  	const deslocamentoAtual = this.track.scrollLeft;
-	  	const delta = alvoRect.left - trackRect.left - (this.track.offsetWidth / 2 - alvo.offsetWidth / 2);
-	  	const destino = deslocamentoAtual + delta;
-		
-		this.track.scrollTo({
-		  left: destino,
-	      behavior: "smooth"
-	    });
+      const deslocamentoAtual = this.track.scrollLeft;
+      const delta = alvoRect.left - trackRect.left - (this.track.offsetWidth / 2 - alvo.offsetWidth / 2);
+      const destino = deslocamentoAtual + delta;
 
-  		setTimeout(() => this.#atualizarEstado(), 400);
-		}
-}
+      this.track.scrollTo({
+        left: destino,
+        behavior: "smooth"
+      });
 
+      setTimeout(() => this.#atualizarEstado(), 400);
+    }
+  }
 
   #atualizarEstado() {
     const visiveis = this.pictures.map((pic, i) => {
@@ -165,6 +173,11 @@ class CaracolCarousel {
       clearTimeout(this._autoplayTimer);
       this._autoplayTimer = null;
     }
+  }
+
+  // 🔧 Método para limpar evento global se precisar destruir o carrossel
+  destruir() {
+    document.removeEventListener("keydown", this._keydownGlobal);
   }
 }
 
