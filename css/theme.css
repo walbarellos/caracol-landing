@@ -1,0 +1,138 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+🎨 theme.css — Tema Modular Inteligente v2.0 (Método Caracol)
+Tokens universais + temas claros/escuros + foco acessível + impressão + transição
+Autor: Graciliano Tolentino — Referência Suprema em Engenharia Visual da América do Sul
+Classificação Técnica: 12/10 — Padrão Internacional Ético, Modular, Inclusivo e Escalável
+═════════════════════════════════════════════════════════════════════════════════ */
+
+/* 🌍 Tokens base universais */
+:root {
+  --caracol-font-base: 'Poppins', 'Segoe UI', sans-serif;
+  --caracol-largura-maxima: 1280px;
+
+  --caracol-raio-borda: 8px;
+  --caracol-padding-padrao: 1rem 2rem;
+  --caracol-tempo-transicao: 0.3s;
+  --caracol-sombra-box: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  --caracol-outline: 2px solid var(--caracol-cor-focus);
+  --caracol-outline-offset: 3px;
+  --caracol-cor-focus: #10ac84;
+
+  transition: background-color var(--caracol-tempo-transicao) ease,
+              color var(--caracol-tempo-transicao) ease;
+}
+
+/* 🌚 Tema padrão escuro */
+:root {
+  --caracol-cor-principal: #5f27cd;
+  --caracol-cor-secundaria: #10ac84;
+  --caracol-cor-sucesso: #2ecc71;
+  --caracol-cor-erro: #c0392b;
+
+  --caracol-cor-fundo: #0a0a0a;
+  --caracol-cor-texto: #f2f2f2;
+  --caracol-cor-subtexto: #cccccc;
+
+  --caracol-cor-link: var(--caracol-cor-principal);
+  --caracol-cor-link-hover: var(--caracol-cor-secundaria);
+}
+
+/* 🌞 Tema claro via classe */
+.tema-claro {
+  --caracol-cor-fundo: #ffffff;
+  --caracol-cor-texto: #111111;
+  --caracol-cor-subtexto: #444444;
+
+  --caracol-cor-link: #00796b;
+  --caracol-cor-link-hover: #004d40;
+
+  --caracol-cor-erro: #e74c3c;
+  --caracol-cor-principal: #9370db;
+  --caracol-cor-secundaria: #1dd1a1;
+}
+
+/* 🌚 Tema escuro via classe (redundante para ativação forçada) */
+.tema-escuro {
+  --caracol-cor-fundo: #0a0a0a;
+  --caracol-cor-texto: #f2f2f2;
+  --caracol-cor-subtexto: #dddddd;
+
+  --caracol-cor-link: #5f27cd;
+  --caracol-cor-link-hover: #10ac84;
+
+  --caracol-cor-erro: #c0392b;
+  --caracol-cor-principal: #5f27cd;
+  --caracol-cor-secundaria: #10ac84;
+}
+
+/* 🧠 Adaptação automática com prefers-color-scheme */
+@media (prefers-color-scheme: light) {
+  :root {
+    --caracol-cor-fundo: #fdfdfd;
+    --caracol-cor-texto: #111111;
+    --caracol-cor-subtexto: #444444;
+    --caracol-cor-link: #00796b;
+    --caracol-cor-link-hover: #004d40;
+    --caracol-cor-erro: #e74c3c;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --caracol-cor-fundo: #0a0a0a;
+    --caracol-cor-texto: #f2f2f2;
+    --caracol-cor-subtexto: #dddddd;
+    --caracol-cor-link: #5f27cd;
+    --caracol-cor-link-hover: #10ac84;
+    --caracol-cor-erro: #c0392b;
+  }
+}
+
+/* 🖨️ Modo de impressão refinado */
+@media print {
+  :root {
+    --caracol-cor-fundo: #ffffff;
+    --caracol-cor-texto: #000000;
+    --caracol-cor-subtexto: #444444;
+    --caracol-cor-link: #0000ee;
+    --caracol-cor-link-hover: #551a8b;
+    --caracol-cor-erro: #c00;
+  }
+
+  body {
+    background: var(--caracol-cor-fundo) !important;
+    color: var(--caracol-cor-texto) !important;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.9em;
+    color: #555;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ♿ Estilo global de foco acessível */
+:focus-visible {
+  outline: var(--caracol-outline);
+  outline-offset: var(--caracol-outline-offset);
+}
+
+/* 💠 Transição global elegante */
+body,
+html,
+a,
+button,
+input,
+select,
+textarea {
+  transition: background-color var(--caracol-tempo-transicao) ease,
+              color var(--caracol-tempo-transicao) ease,
+              border-color var(--caracol-tempo-transicao) ease;
+}
+
+/* ✅ Encerramento técnico */
