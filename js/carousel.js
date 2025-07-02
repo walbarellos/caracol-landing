@@ -65,8 +65,7 @@ class CaracolCarousel {
   this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
   this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
 }
-
-
+	
   #rolar(direcao) {
     const atualIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
     let novoIndex = atualIndex + direcao;
