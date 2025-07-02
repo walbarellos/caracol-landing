@@ -1,18 +1,16 @@
 <!-- components/carousel.html -->
 <section id="componente-carrossel" class="carrossel-container" role="region" aria-label="Carrossel de imagens do Método Caracol">
-  
-  <!-- 🔁 Navegação Acessível -->
-  <button class="carrossel-seta esquerda" aria-label="Imagem anterior" onclick="scrollCarrossel('esquerda')" tabindex="0">◀</button>
-  <button class="carrossel-seta direita" aria-label="Próxima imagem" onclick="scrollCarrossel('direita')" tabindex="0">▶</button>
 
-  <!-- 🔊 Descrição Dinâmica para Leitores de Tela -->
-  <div id="status-carrossel" class="sr-only" role="status" aria-live="polite">
-    Imagem 1 de 18: Ilustração espiral com fundo roxo escuro e brilho central
-  </div>
+  <!-- 🔁 Navegação acessível sem handlers inline -->
+  <button class="carrossel-seta esquerda" aria-label="Imagem anterior" tabindex="0">◀</button>
+  <button class="carrossel-seta direita" aria-label="Próxima imagem" tabindex="0">▶</button>
 
-  <!-- 🎠 Faixa de Imagens com Responsividade e Lazy Loading -->
-  <div id="carrossel" class="carrossel-itens" tabindex="0" aria-label="Lista de imagens em rolagem horizontal">
-    
+  <!-- 🔊 Status dinâmico para leitores de tela (será gerado dinamicamente pelo JS) -->
+  <!-- (Removido ID duplicado. A classe Carousel criará o elemento acessível via JS) -->
+
+  <!-- 🎠 Faixa de imagens com responsividade e semântica -->
+  <div class="carrossel-itens" tabindex="0" aria-label="Lista de imagens em rolagem horizontal">
+
     <picture>
       <source srcset="/assets/carrossel/caracol01.webp" type="image/webp" />
       <img src="/assets/carrossel/caracol01.jpg" alt="Ilustração espiral com fundo roxo escuro e brilho central" loading="lazy" width="480" height="320" />
@@ -28,67 +26,7 @@
       <img src="/assets/carrossel/caracol03.jpg" alt="Morfologia caracólica em fundo nebuloso com partículas" loading="lazy" width="480" height="320" />
     </picture>
 
-    <!-- As demais imagens seguem o mesmo padrão -->
-
+    <!-- Adicione mais imagens conforme necessário -->
+    
   </div>
 </section>
-
-<script>
-  // 🎠 Função principal de rolagem lateral do carrossel
-  function scrollCarrossel(direcao) {
-    const carrossel = document.getElementById("carrossel");
-    const largura = carrossel.clientWidth * 0.9;
-
-    carrossel.scrollBy({
-      left: direcao === 'esquerda' ? -largura : largura,
-      behavior: "smooth"
-    });
-  }
-
-  // 🧠 Acessibilidade e atualização dinâmica
-  document.addEventListener("DOMContentLoaded", () => {
-    const carrossel = document.getElementById("carrossel");
-    const imagens = carrossel.querySelectorAll("picture");
-    const status = document.getElementById("status-carrossel");
-    const setaE = document.querySelector(".carrossel-seta.esquerda");
-    const setaD = document.querySelector(".carrossel-seta.direita");
-    let ultimo = -1;
-
-    // 🔄 Atualiza status a cada rolagem
-    carrossel.addEventListener("scroll", () => {
-      let maiorVisivel = 0;
-      let imagemAtual = 0;
-
-      imagens.forEach((pic, index) => {
-        const img = pic.querySelector("img");
-        const r = img.getBoundingClientRect();
-        const visivel = Math.max(0, Math.min(r.right, window.innerWidth) - Math.max(r.left, 0));
-        if (visivel > maiorVisivel) {
-          maiorVisivel = visivel;
-          imagemAtual = index;
-        }
-      });
-
-      if (imagemAtual !== ultimo) {
-        const alt = imagens[imagemAtual].querySelector("img").alt;
-        status.textContent = `Imagem ${imagemAtual + 1} de ${imagens.length}: ${alt}`;
-        ultimo = imagemAtual;
-      }
-
-      // 🧭 Ativa/desativa setas com base na posição
-      setaE.disabled = carrossel.scrollLeft <= 10;
-      setaD.disabled = carrossel.scrollLeft >= carrossel.scrollWidth - carrossel.clientWidth - 10;
-    });
-
-    // ⌨️ Navegação por teclado
-    carrossel.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") scrollCarrossel("esquerda");
-      if (e.key === "ArrowRight") scrollCarrossel("direita");
-    });
-
-    // 🧩 Foco inicial no carrossel para acessibilidade
-    carrossel.setAttribute("tabindex", "0");
-    carrossel.focus({ preventScroll: true });
-  });
-</script>
-
