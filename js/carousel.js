@@ -1,9 +1,3 @@
-// ════════════════════════════════════════════════════════════════════════
-// 🎠 carousel.js — Carrossel Inteligente Método Caracol v14.3
-// Sabedoria no controle, força na rolagem, beleza na experiência visual
-// Nota realista: 12/10 — Engenharia internacional com acessibilidade real
-// ════════════════════════════════════════════════════════════════════════
-
 "use strict";
 
 class CaracolCarousel {
@@ -13,7 +7,6 @@ class CaracolCarousel {
       return;
     }
 
-    // 🔐 Evita reexecução
     if (container.dataset.loaded === "true") return;
 
     this.container = container;
@@ -24,90 +17,96 @@ class CaracolCarousel {
     this.status = this.#criarStatusAcessibilidade();
 
     this.raf = null;
+    this.autoplayDelay = parseInt(this.container.dataset.autoplay || "0", 10);
+    this.loop = this.container.dataset.loop === "true";
+    this.autoplayAtivo = false;
+
     this.#configurarTrack();
     this.#vincularEventos();
     this.#atualizarEstado();
 
-    // 🧠 Marca como iniciado
     container.dataset.loaded = "true";
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔧 Configuração inicial do carrossel e seu comportamento de rolagem
-  // ════════════════════════════════════════════════════════════════════════
-  #configurarTrack() {
-    this.track.setAttribute("tabindex", "0");
-    this.track.setAttribute("role", "region");
-    this.track.setAttribute("aria-label", "Carrossel de imagens com navegação por teclado");
-    this.track.scrollLeft = 0;
-
-    // 🎯 Inicia autoplay se habilitado via data-atributo
-    this.autoplayDelay = parseInt(this.container.dataset.autoplay || "0", 10);
-    this.loop = this.container.dataset.loop === "true";
-    this.autoplayAtivo = false;
 
     if (this.autoplayDelay > 0) {
       this.#iniciarAutoplay();
     }
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🎮 Eventos de clique, teclado, rolagem e pausa por acessibilidade
-  // ════════════════════════════════════════════════════════════════════════
-#vincularEventos() {
-  // Atualiza estado mesmo se rolar via autoplay ou setas
-  this.track.addEventListener("scroll", () => {
-    cancelAnimationFrame(this.raf);
-    this.raf = requestAnimationFrame(() => this.#atualizarEstado());
-  });
+  #configurarTrack() {
+    this.track.setAttribute("tabindex", "0");
+    this.track.setAttribute("role", "region");
+    this.track.setAttribute("aria-label", "Carrossel de imagens com navegação por teclado");
+    this.track.scrollLeft = 0;
+  }
 
-  // Setas sempre clicáveis
-  this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
-  this.setaDireita?.addEventListener("click", () => this.#rolar(1));
+  #vincularEventos() {
+    // Atualiza estado no scroll
+    this.track.addEventListener("scroll", () => {
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => this.#atualizarEstado());
+    });
 
-  // Teclado funciona se qualquer parte do carousel já recebeu foco (clicado uma vez)
-  document.addEventListener("keydown", (e) => {
-    if (document.body.contains(this.container) &&
-        document.activeElement === this.track) {
-      if (e.key === "ArrowLeft") this.#rolar(-1);
-      if (e.key === "ArrowRight") this.#rolar(1);
-    }
-  });
+    // Clique nas setas sempre funcionam
+    this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
+    this.setaDireita?.addEventListener("click", () => this.#rolar(1));
 
-  // Ao clicar em qualquer lugar do carrossel, já garante foco
-  this.container.addEventListener("click", () => {
-    this.track.focus();
-  });
+    // Teclado funciona após foco no track (melhor para acessibilidade)
+    this.track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        this.#rolar(-1);
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        this.#rolar(1);
+      }
+    });
 
-  // Autoplay: sempre ativo, sem pausa por hover
-  // Remover qualquer listener de pausa no hover/focus que estava no loop
-}
-
-  // ════════════════════════════════════════════════════════════════════════
-  // 📐 Rola o carrossel com passo proporcional
-  // ════════════════════════════════════════════════════════════════════════
-  #rolar(direcao) {
-    const passo = this.track.clientWidth * 0.9;
-    this.track.scrollBy({
-      left: direcao * passo,
-      behavior: "smooth"
+    // Ao clicar em qualquer lugar do container, foca no track para ativar teclado
+    this.container.addEventListener("click", () => {
+      this.track.focus();
     });
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔍 Atualiza visualmente o carrossel e o status de acessibilidade
-  // ════════════════════════════════════════════════════════════════════════
+  #rolar(direcao) {
+    // Índice da imagem atualmente ativa
+    const ativoIndex = this.pictures.findIndex(pic => pic.classList.contains("ativo"));
+    let novoIndex = ativoIndex + direcao;
+
+    // Loop ou limites
+    if (novoIndex < 0) {
+      if (this.loop) novoIndex = this.pictures.length - 1;
+      else novoIndex = 0;
+    } else if (novoIndex >= this.pictures.length) {
+      if (this.loop) novoIndex = 0;
+      else novoIndex = this.pictures.length - 1;
+    }
+
+    const pic = this.pictures[novoIndex];
+    if (pic) {
+      // Scroll para posição exata da imagem dentro do container
+      this.track.scrollTo({
+        left: pic.offsetLeft - this.track.offsetLeft,
+        behavior: "smooth"
+      });
+    }
+  }
+
   #atualizarEstado() {
-    const visiveis = this.pictures.map((pic, i) => {
-      const img = pic.querySelector("img");
-      if (!img) return { i, visivel: 0 };
-      const rect = img.getBoundingClientRect();
-      const larguraVisivel = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
-      return { i, visivel: larguraVisivel };
+    // Calcula qual imagem está mais centralizada
+    const containerCenter = this.track.scrollLeft + this.track.clientWidth / 2;
+
+    let maisProximo = { i: 0, distancia: Infinity };
+
+    this.pictures.forEach((pic, i) => {
+      const picCenter = pic.offsetLeft + pic.clientWidth / 2;
+      const distancia = Math.abs(containerCenter - picCenter);
+      if (distancia < maisProximo.distancia) {
+        maisProximo = { i, distancia };
+      }
     });
 
-    const maisVisivel = visiveis.reduce((a, b) => (a.visivel > b.visivel ? a : b), { i: 0, visivel: 0 });
-    const atual = maisVisivel.i;
+    const atual = maisProximo.i;
 
     this.pictures.forEach((pic, i) => {
       pic.classList.toggle("ativo", i === atual);
@@ -117,12 +116,12 @@ class CaracolCarousel {
     const descricao = imagemAtual?.alt || "imagem sem descrição";
     this.status.textContent = `Imagem ${atual + 1} de ${this.pictures.length}: ${descricao}`;
 
-    // 🎯 Desativa botões se aplicável
+    // Atualiza estado das setas
     const maxScroll = this.track.scrollWidth - this.track.clientWidth;
-    this.setaEsquerda.disabled = this.track.scrollLeft <= 10;
-    this.setaDireita.disabled = this.track.scrollLeft >= maxScroll - 10;
+    this.setaEsquerda.disabled = !this.loop && this.track.scrollLeft <= 10;
+    this.setaDireita.disabled = !this.loop && this.track.scrollLeft >= maxScroll - 10;
 
-    // 📢 Dispara evento externo para integração
+    // Evento custom para integração externa
     this.container.dispatchEvent(new CustomEvent("carrosselAtualizado", {
       detail: {
         index: atual,
@@ -132,9 +131,6 @@ class CaracolCarousel {
     }));
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔊 Elemento invisível para leitores de tela com status dinâmico
-  // ════════════════════════════════════════════════════════════════════════
   #criarStatusAcessibilidade() {
     const div = document.createElement("div");
     div.className = "sr-only";
@@ -144,22 +140,20 @@ class CaracolCarousel {
     return div;
   }
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 🔁 Autoplay com pausa automática
-  // ════════════════════════════════════════════════════════════════════════
   #iniciarAutoplay() {
     this.autoplayAtivo = true;
-    const executar = () => {
+
+    const repetir = () => {
       if (!this.autoplayAtivo) return;
+
       this.#rolar(1);
 
       this._autoplayTimer = setTimeout(() => {
-        if (this.loop || this.setaDireita?.disabled === false) {
-          executar();
-        }
+        repetir();
       }, this.autoplayDelay);
     };
-    executar();
+
+    repetir();
   }
 
   #pausarAutoplayTemporariamente() {
@@ -171,5 +165,5 @@ class CaracolCarousel {
   }
 }
 
-// 🌐 Registro global seguro para múltiplas instâncias futuras
+// Registro global para múltiplas instâncias
 window.CaracolCarousel = CaracolCarousel;
