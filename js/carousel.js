@@ -54,24 +54,34 @@ class CaracolCarousel {
   // ════════════════════════════════════════════════════════════════════════
   // 🎮 Eventos de clique, teclado, rolagem e pausa por acessibilidade
   // ════════════════════════════════════════════════════════════════════════
-  #vincularEventos() {
-    this.track.addEventListener("scroll", () => {
-      cancelAnimationFrame(this.raf);
-      this.raf = requestAnimationFrame(() => this.#atualizarEstado());
-    });
+#vincularEventos() {
+  // Atualiza estado mesmo se rolar via autoplay ou setas
+  this.track.addEventListener("scroll", () => {
+    cancelAnimationFrame(this.raf);
+    this.raf = requestAnimationFrame(() => this.#atualizarEstado());
+  });
 
-    this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
-    this.setaDireita?.addEventListener("click", () => this.#rolar(1));
+  // Setas sempre clicáveis
+  this.setaEsquerda?.addEventListener("click", () => this.#rolar(-1));
+  this.setaDireita?.addEventListener("click", () => this.#rolar(1));
 
-    this.track.addEventListener("keydown", (e) => {
+  // Teclado funciona se qualquer parte do carousel já recebeu foco (clicado uma vez)
+  document.addEventListener("keydown", (e) => {
+    if (document.body.contains(this.container) &&
+        document.activeElement === this.track) {
       if (e.key === "ArrowLeft") this.#rolar(-1);
       if (e.key === "ArrowRight") this.#rolar(1);
-      this.#pausarAutoplayTemporariamente();
-    });
+    }
+  });
 
-    this.track.addEventListener("mouseenter", () => this.#pausarAutoplayTemporariamente());
-    this.track.addEventListener("focusin", () => this.#pausarAutoplayTemporariamente());
-  }
+  // Ao clicar em qualquer lugar do carrossel, já garante foco
+  this.container.addEventListener("click", () => {
+    this.track.focus();
+  });
+
+  // Autoplay: sempre ativo, sem pausa por hover
+  // Remover qualquer listener de pausa no hover/focus que estava no loop
+}
 
   // ════════════════════════════════════════════════════════════════════════
   // 📐 Rola o carrossel com passo proporcional
